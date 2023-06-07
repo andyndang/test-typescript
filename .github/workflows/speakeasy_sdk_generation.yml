@@ -22,7 +22,7 @@ jobs:
         - typescript
       mode: pr
       openapi_docs: |
-        - https://whylabs-public.s3.us-west-2.amazonaws.com/yaml/dataservice.yaml2
+        - https://whylabs-public.s3.us-west-2.amazonaws.com/yaml/dataservice.yaml
       speakeasy_version: latest
     secrets:
       github_access_token: ${{ secrets.GITHUB_TOKEN }}
