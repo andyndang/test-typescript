@@ -1,0 +1,4984 @@
+openapi: 3.0.1
+info:
+  title: data-service
+  version: "0.0"
+tags:
+- name: Profiles
+  description: Logic around managing profiles
+- name: Analysis
+  description: Various analysis endpoints
+- name: Admin
+  description: Administration endpoints
+- name: Bulk
+  description: "Logic around bulk loading parquet, used for backfilling"
+- name: Bootstrap
+  description: Automatically load in data for unit tests
+paths:
+  /admin/getOrgIdCounts:
+    get:
+      tags:
+      - Admin
+      operationId: getOrgIdCounts
+      responses:
+        "200":
+          description: getOrgIdCounts 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrgIdCountResponse'
+  /analysis/anomalies/recent/{orgId}/{datasetId}:
+    get:
+      tags:
+      - Analysis
+      operationId: getRecentAnomalies
+      parameters:
+      - name: orgId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: datasetId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: getRecentAnomalies 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AnalyzerResultResponse'
+  /analysis/calculator/targetBucketBoundary:
+    post:
+      tags:
+      - Analysis
+      operationId: getTargetBucketBoundary
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BucketCalculationRequest'
+        required: true
+      responses:
+        "200":
+          description: getTargetBucketBoundary 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BucketCalculationResponse'
+  /analysis/deleteAnalysisRequests:
+    post:
+      tags:
+      - Analysis
+      operationId: requestAnalysisDeletion
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteAnalysisRequest'
+        required: true
+      responses:
+        "200":
+          description: requestAnalysisDeletion 200 response
+  /analysis/deleteAnalysisRequests/cancel/{id}:
+    put:
+      tags:
+      - Analysis
+      operationId: cancelAnalysisDeletionRequest
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: cancelAnalysisDeletionRequest 200 response
+  /analysis/deleteAnalysisRequests/preview:
+    post:
+      tags:
+      - Analysis
+      operationId: requestAnalysisDeletionPreview
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteAnalysisRequest'
+        required: true
+      responses:
+        "200":
+          description: requestAnalysisDeletionPreview 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataDeletionPreviewResponse'
+  /analysis/deleteAnalysisRequests/runNow:
+    post:
+      tags:
+      - Analysis
+      operationId: deleteAnalysisRunNow
+      responses:
+        "200":
+          description: deleteAnalysisRunNow 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletionReport'
+  /analysis/deleteAnalysisRequests/{orgId}:
+    get:
+      tags:
+      - Analysis
+      operationId: getRecentAnalysisDeletionRequests
+      parameters:
+      - name: orgId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: getRecentAnalysisDeletionRequests 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeleteAnalyzerResult'
+  /analysis/deleteAnalysisRequests/{orgId}/{datasetId}:
+    get:
+      tags:
+      - Analysis
+      operationId: getRecentAnalysisDeletionRequests_1
+      parameters:
+      - name: orgId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: datasetId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: getRecentAnalysisDeletionRequests_1 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeleteAnalyzerResult'
+  /analysis/getAlertCountsOverTime:
+    post:
+      tags:
+      - Analysis
+      operationId: getAlertCountsOverTime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetAlertsOverTimeRequest'
+        required: true
+      responses:
+        "200":
+          description: getAlertCountsOverTime 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetAlertsOverTimeResponse'
+  /analysis/getAlertCountsOverTimeSegmented:
+    post:
+      tags:
+      - Analysis
+      operationId: getAlertCountsOverTimeSegmented
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetAlertCountsOverTimeSegmented'
+        required: true
+      responses:
+        "200":
+          description: getAlertCountsOverTimeSegmented 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SegmentedGetAlertsOverTimeResponse'
+  /analysis/getAnalyzerResults:
+    post:
+      tags:
+      - Analysis
+      operationId: getAnalyzerResults
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetAnalyzerResultRequest'
+        required: true
+      responses:
+        "200":
+          description: getAnalyzerResults 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AnalyzerResultResponse'
+  /analysis/getAnomalyCounts:
+    post:
+      tags:
+      - Analysis
+      operationId: getAnomalyCountsQuery
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetAnomalyCountsRequest'
+        required: true
+      responses:
+        "200":
+          description: getAnomalyCountsQuery 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetAnomalyCountsResult'
+  /analysis/getLatestAnomalyQuery:
+    post:
+      tags:
+      - Analysis
+      operationId: getLatestAnomalyQuery
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetLatestAnomalyQuery'
+        required: true
+      responses:
+        "200":
+          description: getLatestAnomalyQuery 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetLatestAnomalyResponse'
+  /analysis/getSegmentAnomalyCounts:
+    post:
+      tags:
+      - Analysis
+      summary: "Return list of count of anomalies, grouped by segment, sored by that\
+        \ count descendingly."
+      description: "Return list of count of anomalies, grouped by segment, sored by\
+        \ that count descendingly."
+      operationId: getSegmentAnomalyCounts
+      requestBody:
+        description: "org and datasets to look for, along with time range"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetSegmentAnomalyCountsRequest'
+        required: true
+      responses:
+        "200":
+          description: list of counts of anomalies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetSegmentAnomalyCountsResponse'
+  /analysis/ingestBulkResults:
+    post:
+      tags:
+      - Analysis
+      operationId: ingestBulkResults
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: string
+        required: true
+      responses:
+        "200":
+          description: ingestBulkResults 200 response
+  /analysis/markUnhelpful/{id}:
+    put:
+      tags:
+      - Analysis
+      summary: It was a nordstrom requirement to be able to mark anomalies as unhelpful
+        which hides an alert from the UI.
+      description: It was a nordstrom requirement to be able to mark anomalies as
+        unhelpful which hides an alert from the UI.
+      operationId: markUnhelpful
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: markUnhelpful 200 response
+  /analysis/promoteAdhocResults/{runId}:
+    post:
+      tags:
+      - Analysis
+      summary: Experimental endpoint for copying adhoc results over to the main tables.
+      description: "Experimental endpoint for copying adhoc results over to the main\
+        \ tables. TBD if we want to expand on this flow, but it makes unit tests easier\
+        \ to write and unlock some hackathon ideas."
+      operationId: promoteAdhocResults
+      parameters:
+      - name: runId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: promoteAdhocResults 200 response
+  /analysis/runAnalyzer:
+    post:
+      tags:
+      - Analysis
+      operationId: triggerV3AnalyzerPostgres
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdHocMonitorRequestV3'
+        required: true
+      responses:
+        "200":
+          description: triggerV3AnalyzerPostgres 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdHocMonitorResponse'
+  /analysis/runAnalyzerDruid:
+    post:
+      tags:
+      - Analysis
+      operationId: triggerV3AnalyzerDruid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdHocMonitorRequestV3'
+        required: true
+      responses:
+        "200":
+          description: triggerV3AnalyzerDruid 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdHocMonitorResponse'
+  /analysis/runBackfillExplainer:
+    post:
+      tags:
+      - Analysis
+      operationId: backfillExplain
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BackfillExplainerRequest'
+        required: true
+      responses:
+        "200":
+          description: backfillExplain 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackfillExplainerResponse'
+  /analysis/runs/count:
+    post:
+      tags:
+      - Analysis
+      operationId: getAnalyzerRunCount
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CountAnalyzerRunRequest'
+        required: true
+      responses:
+        "200":
+          description: getAnalyzerRunCount 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountAnalyzerRunResult'
+  /analysis/runs/getAdHocRunNumEvents:
+    post:
+      tags:
+      - Analysis
+      operationId: getAdHocRunNumEvents
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetAdHocRunNumEventsRequest'
+        required: true
+      responses:
+        "200":
+          description: getAdHocRunNumEvents 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAdHocRunNumEventsResponse'
+  /analysis/runs/list:
+    post:
+      tags:
+      - Analysis
+      operationId: getAnalyzerRuns
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetAnalyzerRunsRequest'
+        required: true
+      responses:
+        "200":
+          description: getAnalyzerRuns 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AnalyzerRun'
+  /analysis/targetMatrixEvaluator:
+    post:
+      tags:
+      - Analysis
+      summary: Evaluate analyzer target metrix behavior against profile info.
+      description: "Evaluate analyzer target metrix behavior against profile info.\
+        \ For example a profile has a specific set of tags. Given a target matrix\
+        \ config, what segments would be analyzed?"
+      operationId: targetMatrixEvaluator
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluateTargetMatrixRequest'
+        required: true
+      responses:
+        "200":
+          description: targetMatrixEvaluator 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvaluateTargetMatrixResponse'
+  /analysis/{id}:
+    get:
+      tags:
+      - Analysis
+      operationId: getById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: getById 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyzerResultResponse'
+  /bootstrap/boostrapDatabaseForUnitTests:
+    post:
+      tags:
+      - Bootstrap
+      operationId: boostrapDatabaseForUnitTests
+      responses:
+        "200":
+          description: boostrapDatabaseForUnitTests 200 response
+  /bulk/analyzerResults/{operation}:
+    put:
+      tags:
+      - Bulk
+      operationId: insertAnalyzerResults
+      parameters:
+      - name: operation
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/PostgresBulkIngestionMode'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParquetIngestionRequest'
+        required: true
+      responses:
+        "200":
+          description: insertAnalyzerResults 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParquetIngestResponse'
+  /bulk/analyzerRuns/{operation}:
+    put:
+      tags:
+      - Bulk
+      operationId: insertAnalyzerRuns
+      parameters:
+      - name: operation
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/PostgresBulkIngestionMode'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParquetIngestionRequest'
+        required: true
+      responses:
+        "200":
+          description: insertAnalyzerRuns 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParquetIngestResponse'
+  /bulk/monitorConfig/{operation}:
+    put:
+      tags:
+      - Bulk
+      operationId: insertMonitorConfig
+      parameters:
+      - name: operation
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/PostgresBulkIngestionMode'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParquetIngestionRequest'
+        required: true
+      responses:
+        "200":
+          description: insertMonitorConfig 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParquetIngestResponse'
+  /diagnostic/run/{orgId}/{datasetId}/{analysisId}:
+    get:
+      tags:
+      - Diagnostic
+      operationId: runDiagnostic
+      parameters:
+      - name: orgId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: datasetId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: analysisId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: runDiagnostic 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiagnosticResponse'
+  /diagnostic/uploadPatterns/{orgId}/{datasetId}:
+    get:
+      tags:
+      - Diagnostic
+      operationId: analyzeUploadPatterns
+      parameters:
+      - name: orgId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: datasetId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: analyzeUploadPatterns 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiagnosticAnalyzerGateResponse'
+  /monitorConfig/getLatest/{orgId}/{datasetId}:
+    get:
+      tags:
+      - MonitorConfigs
+      operationId: getAnalyzerResults_1
+      parameters:
+      - name: orgId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: datasetId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: getAnalyzerResults_1 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonitorConfigV3Row'
+  /monitorConfig/patch:
+    post:
+      tags:
+      - MonitorConfigs
+      operationId: versionDiff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigPatchRequest'
+        required: true
+      responses:
+        "200":
+          description: versionDiff 200 response
+          content:
+            application/json:
+              schema:
+                type: string
+  /monitorConfig/patch/{orgId}/{datasetId}/{version1}/{version2}:
+    get:
+      tags:
+      - MonitorConfigs
+      operationId: versionDiff_1
+      parameters:
+      - name: orgId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: datasetId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: version1
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: version2
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: versionDiff_1 200 response
+          content:
+            application/json:
+              schema:
+                type: string
+  /profiles/audit:
+    delete:
+      tags:
+      - Profiles
+      summary: Utility method for deleting an audit entry by filename thus enabling
+        re-ingestion.
+      description: "Utility method for deleting an audit entry by filename thus enabling\
+        \ re-ingestion. This endpoint isn't meant for end-users, it's just to make\
+        \ testing a bit easier."
+      operationId: deleteAuditEntry
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileReadRequest'
+        required: true
+      responses:
+        "200":
+          description: deleteAuditEntry 200 response
+  /profiles/classificationMetrics:
+    post:
+      tags:
+      - Profiles
+      operationId: classificationMetrics
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModelMetricsRqst'
+        required: true
+      responses:
+        "200":
+          description: classificationMetrics 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ClassificationMetricRow'
+  /profiles/classificationSummary:
+    post:
+      tags:
+      - Profiles
+      operationId: classificationSummary
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModelMetricsRqst'
+        required: true
+      responses:
+        "200":
+          description: classificationSummary 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ClassificationSummaryRow'
+  /profiles/copy/{async}:
+    post:
+      tags:
+      - Profiles
+      operationId: copy
+      parameters:
+      - name: async
+        in: path
+        required: true
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CopyDataRequest'
+        required: true
+      responses:
+        "200":
+          description: copy 200 response
+  /profiles/deleteProfileRequests:
+    post:
+      tags:
+      - Profiles
+      operationId: requestProfileDeletion
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteProfileRequest'
+        required: true
+      responses:
+        "200":
+          description: requestProfileDeletion 200 response
+  /profiles/deleteProfileRequests/cancel/{id}:
+    put:
+      tags:
+      - Profiles
+      operationId: cancelProfileDeletionRequests
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: cancelProfileDeletionRequests 200 response
+  /profiles/deleteProfileRequests/preview:
+    post:
+      tags:
+      - Profiles
+      operationId: requestProfileDeletionPreview
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteProfileRequest'
+        required: true
+      responses:
+        "200":
+          description: requestProfileDeletionPreview 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataDeletionPreviewResponse'
+  /profiles/deleteProfileRequests/runNow:
+    post:
+      tags:
+      - Profiles
+      operationId: deleteAnalysisRunNow_1
+      responses:
+        "200":
+          description: deleteAnalysisRunNow_1 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletionReport'
+  /profiles/deleteProfileRequests/{orgId}:
+    get:
+      tags:
+      - Profiles
+      operationId: getRecentProfileDeletionRequests
+      parameters:
+      - name: orgId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: getRecentProfileDeletionRequests 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeleteProfile'
+  /profiles/deleteProfileRequests/{orgId}/{datasetId}:
+    get:
+      tags:
+      - Profiles
+      operationId: getRecentProfileDeletionRequests_1
+      parameters:
+      - name: orgId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: datasetId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: getRecentProfileDeletionRequests_1 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeleteProfile'
+  /profiles/forcePromote/{async}:
+    post:
+      tags:
+      - Profiles
+      summary: Force data promotion from staging=\>historical hypertables
+      description: Force data promotion from staging=\>historical hypertables
+      operationId: forcePromote
+      parameters:
+      - name: async
+        in: path
+        required: true
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: forcePromote 200 response
+  /profiles/getReferenceProfileSketches/:
+    post:
+      tags:
+      - Profiles
+      operationId: getReferenceProfileSketches
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReferenceProfileRequest'
+        required: true
+      responses:
+        "200":
+          description: getReferenceProfileSketches 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ModelRollup'
+  /profiles/index:
+    post:
+      tags:
+      - Profiles
+      operationId: indexProfile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileReadRequest'
+        required: true
+      responses:
+        "200":
+          description: indexProfile 200 response
+  /profiles/indexFromS3:
+    post:
+      tags:
+      - Profiles
+      operationId: indexProfile_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReindexFromS3Request'
+        required: true
+      responses:
+        "200":
+          description: indexProfile_1 200 response
+          content:
+            text/plain:
+              schema:
+                type: string
+  /profiles/maxio:
+    post:
+      tags:
+      - Profiles
+      summary: spotless:off Return max count for input and output features.
+      description: spotless:off Return max count for input and output features. Implements
+        one version of the \`getBatchMetadataByTimeRangeQuery\` dashbird query.
+      operationId: maxIO
+      requestBody:
+        description: '- specification of filtering criteria'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MaxIORequest'
+        required: true
+      responses:
+        "200":
+          description: List of MaxIORow structs timestamp isOutput maxCount 1672272000000
+            0 2834 1672272000000 1 2834
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MaxIORow'
+  /profiles/metricSegments/:
+    post:
+      tags:
+      - Profiles
+      summary: For debugging this diagnostic helper query
+      description: For debugging this diagnostic helper query
+      operationId: metricSegments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rqst:
+                  $ref: '#/components/schemas/MetricSegmentsRequest'
+        required: true
+      responses:
+        "200":
+          description: metricSegments 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /profiles/numericMetricsForSegmentKey/:
+    post:
+      tags:
+      - Profiles
+      operationId: getNumericMetricsForSegmentKey
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                request:
+                  $ref: '#/components/schemas/NumericMetricsForSegmentKeyRequest'
+        required: true
+      responses:
+        "200":
+          description: getNumericMetricsForSegmentKey 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ModelRollup'
+  /profiles/numericMetricsForTimeRange/:
+    post:
+      tags:
+      - Profiles
+      operationId: getNumericMetricsForTimeRange
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                request:
+                  $ref: '#/components/schemas/NumericMetricsForTimeRangeRequest'
+        required: true
+      responses:
+        "200":
+          description: getNumericMetricsForTimeRange 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ModelRollup'
+  /profiles/profileRollup/:
+    put:
+      tags:
+      - Profiles
+      operationId: profileRollup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileRollupRequest'
+        required: true
+      responses:
+        "200":
+          description: profileRollup 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ModelRollup'
+  /profiles/regressionMetrics:
+    post:
+      tags:
+      - Profiles
+      operationId: regressionMetrics
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModelMetricsRqst'
+        required: true
+      responses:
+        "200":
+          description: regressionMetrics 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RegressionMetricRow'
+  /profiles/segments:
+    post:
+      tags:
+      - Profiles
+      operationId: getSegments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rqst:
+                  $ref: '#/components/schemas/SegmentsRequest'
+        required: true
+      responses:
+        "200":
+          description: getSegments 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /profiles/segments/hide:
+    put:
+      tags:
+      - Profiles
+      operationId: hideSegment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rqst:
+                  $ref: '#/components/schemas/HideSegmentRequest'
+        required: true
+      responses:
+        "200":
+          description: hideSegment 200 response
+  /profiles/segments/{orgId}/{datasetId}:
+    get:
+      tags:
+      - Profiles
+      operationId: getSegments_1
+      parameters:
+      - name: orgId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: datasetId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: getSegments_1 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+      deprecated: true
+  /profiles/timeBoundary:
+    post:
+      tags:
+      - Profiles
+      operationId: timeBoundary
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeBoundaryQuery'
+        required: true
+      responses:
+        "200":
+          description: timeBoundary 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeBoundaryResponse'
+  /profiles/timeSeries:
+    post:
+      tags:
+      - Profiles
+      operationId: getBatchDateRangeQuery
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeSeriesProfileRequest'
+        required: true
+      responses:
+        "200":
+          description: getBatchDateRangeQuery 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TimeSeriesProfileResponse'
+components:
+  schemas:
+    AbstractMessage:
+      allOf:
+      - $ref: '#/components/schemas/AbstractMessageLite_AbstractMessageLite.AbstractMessageLite.Builder_AbstractMessageLite.AbstractMessageLite.Builder__'
+      - type: object
+        properties:
+          initialized:
+            type: boolean
+          initializationErrorString:
+            type: string
+          serializedSize:
+            type: integer
+            format: int32
+    AbstractMessageLite_AbstractMessageLite.AbstractMessageLite.Builder_AbstractMessageLite.AbstractMessageLite.Builder__:
+      type: object
+    Action:
+      type: object
+    AdHocMonitorRequestV3:
+      type: object
+      properties:
+        columnName:
+          type: string
+          deprecated: true
+        columnNames:
+          type: array
+          items:
+            type: string
+        segmentTags:
+          type: array
+          items:
+            type: array
+            items:
+              $ref: '#/components/schemas/Tag'
+        datasourceNamespace:
+          type: string
+        druidSecretId:
+          type: string
+        mutableEventStream:
+          type: string
+        start:
+          type: string
+        end:
+          type: string
+        inlineResults:
+          type: boolean
+        monitorConfig:
+          $ref: '#/components/schemas/MonitorConfigV3'
+        notifySiren:
+          type: boolean
+        notifySirenEveryAnalysis:
+          type: boolean
+        nearRealTimeAlertSqsQueue:
+          type: string
+    AdHocMonitorResponse:
+      type: object
+      properties:
+        runId:
+          type: string
+        success:
+          type: boolean
+        numEventsProduced:
+          type: integer
+          format: int32
+        numAnomalies:
+          type: integer
+          format: int32
+        numDigestsProduced:
+          type: integer
+          format: int32
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnalyzerResult'
+        sirenDigests:
+          type: array
+          items:
+            $ref: '#/components/schemas/SirenDigestPayload'
+        sirenEveryAnomaly:
+          type: array
+          items:
+            $ref: '#/components/schemas/SirenEveryAnomalyPayload'
+    Analyzer:
+      required:
+      - backfillGracePeriodDuration
+      - batchCoolDownPeriod
+      - config
+      - dataReadinessDuration
+      - disabled
+      - id
+      - metadata
+      - schedule
+      - targetMatrix
+      - targetSize
+      - version
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        id:
+          type: string
+        schedule:
+          $ref: '#/components/schemas/AnalyzerSchedule'
+        disabled:
+          type: boolean
+        targetMatrix:
+          $ref: '#/components/schemas/TargetMatrix'
+        backfillGracePeriodDuration:
+          $ref: '#/components/schemas/Duration'
+        batchCoolDownPeriod:
+          $ref: '#/components/schemas/Duration'
+        dataReadinessDuration:
+          $ref: '#/components/schemas/Duration'
+        targetSize:
+          type: integer
+          format: int32
+        config:
+          $ref: '#/components/schemas/AnalyzerConfig'
+        version:
+          type: integer
+          format: int64
+    AnalyzerConfig:
+      type: object
+      properties:
+        version:
+          type: integer
+          format: int32
+        algorithm:
+          type: string
+        analyzerType:
+          type: string
+        algorithmMode:
+          type: string
+        baseline:
+          $ref: '#/components/schemas/Baseline'
+        minBatchSize:
+          type: integer
+          format: int32
+        metric:
+          type: string
+    AnalyzerGateAnalysisOutput:
+      required:
+      - analyzerId
+      - current
+      - datasetId
+      - description
+      - gateType
+      - observation
+      - suggested
+      type: object
+      properties:
+        observation:
+          $ref: '#/components/schemas/AnalyzerGateObservation'
+        analyzerId:
+          type: string
+        datasetId:
+          type: string
+        current:
+          type: string
+        suggested:
+          type: string
+        gateType:
+          $ref: '#/components/schemas/GateType'
+        description:
+          type: string
+    AnalyzerGateObservation:
+      type: string
+      enum:
+      - SHORT
+      - FINE
+      - LONG
+    AnalyzerResult:
+      type: object
+      properties:
+        id:
+          type: string
+        latest:
+          type: boolean
+          nullable: true
+        analysisId:
+          type: string
+        orgId:
+          type: string
+        datasetId:
+          type: string
+        column:
+          type: string
+        granularity:
+          $ref: '#/components/schemas/ChronoUnit'
+        segment:
+          type: string
+          deprecated: true
+        creationTimestamp:
+          type: integer
+          format: int64
+        datasetTimestamp:
+          type: integer
+          format: int64
+        targetLevel:
+          $ref: '#/components/schemas/TargetLevel'
+        anomalyCount:
+          type: integer
+          format: int64
+        targetCount:
+          type: integer
+          format: int64
+        targetBatchesWithProfileCount:
+          type: integer
+          format: int64
+        baselineCount:
+          type: integer
+          format: int64
+        baselineBatchesWithProfileCount:
+          type: integer
+          format: int64
+        expectedBaselineCount:
+          type: integer
+          format: int64
+        expectedBaselineSuppressionThreshold:
+          type: integer
+          format: int64
+        isRollup:
+          type: boolean
+        runId:
+          type: string
+        analyzerId:
+          type: string
+        metric:
+          type: string
+        algorithm:
+          type: string
+        analyzerType:
+          type: string
+        algorithmMode:
+          type: string
+        calculationRuntimeNano:
+          type: integer
+          format: int64
+        analyzerVersion:
+          type: integer
+          format: int64
+        monitorIds:
+          type: array
+          items:
+            type: string
+        failureType:
+          $ref: '#/components/schemas/FailureType'
+        failureExplanation:
+          type: string
+        weight:
+          type: integer
+          format: int64
+          deprecated: true
+        segmentWeight:
+          type: number
+          format: double
+        segmentWeightProvided:
+          type: boolean
+          deprecated: true
+        analyzerConfigVersion:
+          type: integer
+          format: int64
+        threshold_baselineMetricValue:
+          type: number
+          format: double
+        threshold_metricValue:
+          type: number
+          format: double
+        threshold_calculatedUpper:
+          type: number
+          format: double
+        threshold_calculatedLower:
+          type: number
+          format: double
+        threshold_absoluteUpper:
+          type: number
+          format: double
+        threshold_absoluteLower:
+          type: number
+          format: double
+        threshold_factor:
+          type: number
+          format: double
+        threshold_minBatchSize:
+          type: integer
+          format: int32
+        seasonal_shouldReplace:
+          type: boolean
+        seasonal_lambdaKeep:
+          type: number
+          format: double
+        seasonal_adjusted_prediction:
+          type: number
+          format: double
+        seasonal_replacement:
+          type: number
+          format: double
+        columnList_added:
+          type: integer
+          format: int64
+        columnList_removed:
+          type: integer
+          format: int64
+        columnList_addedSample:
+          type: array
+          items:
+            type: string
+        columnList_removedSample:
+          type: array
+          items:
+            type: string
+        columnList_mode:
+          $ref: '#/components/schemas/ColumnListChangeMode'
+        comparison_expected:
+          type: string
+        comparison_observed:
+          type: string
+        frequentStringComparison_operator:
+          $ref: '#/components/schemas/FrequentStringComparisonOperator'
+        frequentStringComparison_sample:
+          type: array
+          items:
+            type: string
+        drift_metricValue:
+          type: number
+          format: double
+        drift_threshold:
+          type: number
+          format: double
+        diff_metricValue:
+          type: number
+          format: double
+        diff_threshold:
+          type: number
+          format: double
+        diff_mode:
+          $ref: '#/components/schemas/DiffMode'
+        threshold_type:
+          $ref: '#/components/schemas/ThresholdType'
+        entitySchemaVersion:
+          type: integer
+          format: int64
+        imagePath:
+          type: string
+        analyzerResultType:
+          type: string
+        userInitiatedBackfill:
+          type: integer
+          format: int64
+        weightConfigVersion:
+          type: integer
+          format: int64
+        userMarkedUnhelpful:
+          type: boolean
+        monitorConfigVersion:
+          type: integer
+          format: int64
+        referenceProfileId:
+          type: string
+    AnalyzerResultResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        latest:
+          type: boolean
+          nullable: true
+        analysisId:
+          type: string
+        orgId:
+          type: string
+        datasetId:
+          type: string
+        column:
+          type: string
+        granularity:
+          $ref: '#/components/schemas/ChronoUnit'
+        segment:
+          type: string
+          deprecated: true
+        creationTimestamp:
+          type: integer
+          format: int64
+        datasetTimestamp:
+          type: integer
+          format: int64
+        targetLevel:
+          $ref: '#/components/schemas/TargetLevel'
+        anomalyCount:
+          type: integer
+          format: int64
+        targetCount:
+          type: integer
+          format: int64
+        targetBatchesWithProfileCount:
+          type: integer
+          format: int64
+        baselineCount:
+          type: integer
+          format: int64
+        baselineBatchesWithProfileCount:
+          type: integer
+          format: int64
+        expectedBaselineCount:
+          type: integer
+          format: int64
+        expectedBaselineSuppressionThreshold:
+          type: integer
+          format: int64
+        isRollup:
+          type: boolean
+        runId:
+          type: string
+        analyzerId:
+          type: string
+        metric:
+          type: string
+        algorithm:
+          type: string
+        analyzerType:
+          type: string
+        algorithmMode:
+          type: string
+        calculationRuntimeNano:
+          type: integer
+          format: int64
+        analyzerVersion:
+          type: integer
+          format: int64
+        monitorIds:
+          type: array
+          items:
+            type: string
+        failureType:
+          $ref: '#/components/schemas/FailureType'
+        failureExplanation:
+          type: string
+        weight:
+          type: integer
+          format: int64
+          deprecated: true
+        segmentWeight:
+          type: number
+          format: double
+        segmentWeightProvided:
+          type: boolean
+          deprecated: true
+        analyzerConfigVersion:
+          type: integer
+          format: int64
+        threshold:
+          $ref: '#/components/schemas/ThresholdContainer'
+        seasonal:
+          $ref: '#/components/schemas/SeasonalContainer'
+        columnListChange:
+          $ref: '#/components/schemas/ColumnListChangeContainer'
+        comparison:
+          $ref: '#/components/schemas/ComparisonContainer'
+        drift:
+          $ref: '#/components/schemas/DriftContainer'
+        diff:
+          $ref: '#/components/schemas/DiffContainer'
+        frequentStringComparison:
+          $ref: '#/components/schemas/FrequentStringComparisonContainer'
+        entitySchemaVersion:
+          type: integer
+          format: int64
+        imagePath:
+          type: string
+        analyzerResultType:
+          type: string
+        userInitiatedBackfill:
+          type: integer
+          format: int64
+        weightConfigVersion:
+          type: integer
+          format: int64
+        userMarkedUnhelpful:
+          type: boolean
+        monitorConfigVersion:
+          type: integer
+          format: int64
+        referenceProfileId:
+          type: string
+    AnalyzerRun:
+      type: object
+      properties:
+        id:
+          type: string
+        orgId:
+          type: string
+        datasetId:
+          type: string
+        createdTs:
+          type: integer
+          format: int64
+        startedTs:
+          type: integer
+          format: int64
+        completedTs:
+          type: integer
+          format: int64
+        status:
+          $ref: '#/components/schemas/MonitorRunStatus'
+        runId:
+          type: string
+        internalErrorMessage:
+          type: string
+        analyzerId:
+          type: string
+        baselineBatchesWithProfileCount:
+          type: integer
+          format: int64
+        targetBatchesWithProfileCount:
+          type: integer
+          format: int64
+        columnsAnalyzed:
+          type: integer
+          format: int64
+        anomalies:
+          type: integer
+          format: int64
+        failureTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/FailureType'
+        forceLatestConfigVersion:
+          type: boolean
+        analyzerVersion:
+          type: integer
+          format: int64
+        monitorIds:
+          type: array
+          items:
+            type: string
+        segmentsAnalyzed:
+          type: integer
+          format: int64
+        customerRequestedBackfill:
+          type: boolean
+    AnalyzerSchedule:
+      type: object
+    AnomalyFilter:
+      required:
+      - excludeColumns
+      - includeColumns
+      - includeMetrics
+      - maxAlertCount
+      - maxRankByWeight
+      - maxTotalWeight
+      - maxWeight
+      - minAlertCount
+      - minRankByWeight
+      - minTotalWeight
+      - minWeight
+      type: object
+      properties:
+        excludeColumns:
+          type: array
+          items:
+            type: string
+        includeColumns:
+          type: array
+          items:
+            type: string
+        includeMetrics:
+          type: array
+          items:
+            type: string
+        minWeight:
+          type: number
+          format: double
+        maxWeight:
+          type: number
+          format: double
+        maxAlertCount:
+          type: integer
+          format: int32
+        maxTotalWeight:
+          type: number
+          format: double
+        minAlertCount:
+          type: integer
+          format: int32
+        minTotalWeight:
+          type: number
+          format: double
+        maxRankByWeight:
+          type: integer
+          format: int32
+        minRankByWeight:
+          type: integer
+          format: int32
+    BackfillExplainerRequest:
+      type: object
+      properties:
+        currentTime:
+          type: string
+        uploadedTime:
+          type: string
+        monitorConfig:
+          $ref: '#/components/schemas/MonitorConfigV3'
+    BackfillExplainerResponse:
+      required:
+      - analyzerRunDates
+      type: object
+      properties:
+        analyzerRunDates:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+    Baseline:
+      type: object
+    BucketCalculationRequest:
+      required:
+      - granularity
+      - ts
+      type: object
+      properties:
+        ts:
+          type: integer
+          format: int64
+        granularity:
+          $ref: '#/components/schemas/DataGranularity'
+    BucketCalculationResponse:
+      required:
+      - end
+      - start
+      type: object
+      properties:
+        start:
+          type: integer
+          format: int64
+        end:
+          type: integer
+          format: int64
+    ByteString:
+      type: object
+      properties:
+        empty:
+          type: boolean
+        validUtf8:
+          type: boolean
+    ChronoUnit:
+      type: string
+      enum:
+      - NANOS
+      - MICROS
+      - MILLIS
+      - SECONDS
+      - MINUTES
+      - HOURS
+      - HALF_DAYS
+      - DAYS
+      - WEEKS
+      - MONTHS
+      - YEARS
+      - DECADES
+      - CENTURIES
+      - MILLENNIA
+      - ERAS
+      - FOREVER
+    ClassificationMetricRow:
+      required:
+      - accuracy
+      - f1
+      - fpr
+      - macroF1
+      - macroFpr
+      - macroPrecision
+      - macroRecall
+      - microF1
+      - microFpr
+      - microPrecision
+      - microRecall
+      - posMacroFpr
+      - posMacroTpr
+      - posMicroFpr
+      - posMicroTpr
+      - precision
+      - recall
+      - timestamp
+      type: object
+      properties:
+        timestamp:
+          type: integer
+          format: int64
+        posMicroFpr:
+          type: number
+          format: double
+        posMicroTpr:
+          type: number
+          format: double
+        posMacroFpr:
+          type: number
+          format: double
+        posMacroTpr:
+          type: number
+          format: double
+        microFpr:
+          type: number
+          format: double
+        microRecall:
+          type: number
+          format: double
+        microPrecision:
+          type: number
+          format: double
+        microF1:
+          type: number
+          format: double
+        macroFpr:
+          type: number
+          format: double
+        macroRecall:
+          type: number
+          format: double
+        macroPrecision:
+          type: number
+          format: double
+        macroF1:
+          type: number
+          format: double
+        recall:
+          type: number
+          format: double
+        fpr:
+          type: number
+          format: double
+        precision:
+          type: number
+          format: double
+        accuracy:
+          type: number
+          format: double
+        f1:
+          type: number
+          format: double
+    ClassificationMetricValues:
+      required:
+      - accuracy
+      - f1
+      - fpr
+      - macroF1
+      - macroFpr
+      - macroPrecision
+      - macroRecall
+      - microF1
+      - microFpr
+      - microPrecision
+      - microRecall
+      - posMacroFpr
+      - posMacroTpr
+      - posMicroFpr
+      - posMicroTpr
+      - precision
+      - recall
+      type: object
+      properties:
+        posMicroFpr:
+          type: number
+          format: double
+        posMicroTpr:
+          type: number
+          format: double
+        posMacroFpr:
+          type: number
+          format: double
+        posMacroTpr:
+          type: number
+          format: double
+        microFpr:
+          type: number
+          format: double
+        microRecall:
+          type: number
+          format: double
+        microPrecision:
+          type: number
+          format: double
+        microF1:
+          type: number
+          format: double
+        macroFpr:
+          type: number
+          format: double
+        macroRecall:
+          type: number
+          format: double
+        macroPrecision:
+          type: number
+          format: double
+        macroF1:
+          type: number
+          format: double
+        recall:
+          type: number
+          format: double
+        fpr:
+          type: number
+          format: double
+        precision:
+          type: number
+          format: double
+        accuracy:
+          type: number
+          format: double
+        f1:
+          type: number
+          format: double
+    ClassificationSummaryRow:
+      required:
+      - confusion
+      - precision
+      - roc
+      - timestamp
+      type: object
+      properties:
+        timestamp:
+          type: integer
+          format: int64
+        roc:
+          type: array
+          items:
+            type: array
+            items:
+              type: number
+              format: double
+        precision:
+          type: array
+          items:
+            type: array
+            items:
+              type: number
+              format: double
+        confusion:
+          $ref: '#/components/schemas/ConfusionMatrix'
+    Classifier:
+      type: string
+      enum:
+      - input
+      - output
+    ColumnListChangeContainer:
+      type: object
+      properties:
+        columnList_added:
+          type: integer
+          format: int64
+        columnList_removed:
+          type: integer
+          format: int64
+        columnList_addedSample:
+          type: array
+          items:
+            type: string
+        columnList_removedSample:
+          type: array
+          items:
+            type: string
+        columnList_mode:
+          $ref: '#/components/schemas/ColumnListChangeMode'
+    ColumnListChangeMode:
+      type: string
+      enum:
+      - ON_ADD_AND_REMOVE
+      - ON_ADD
+      - ON_REMOVE
+    ColumnMetric:
+      type: object
+      properties:
+        entity:
+          $ref: '#/components/schemas/ColumnMetricEntity'
+        frequent_strings:
+          type: object
+          additionalProperties: true
+        histogram:
+          $ref: '#/components/schemas/HistogramSummary'
+        quantiles:
+          type: array
+          items:
+            type: number
+            format: double
+        booleans:
+          type: boolean
+        objects:
+          $ref: '#/components/schemas/Object'
+      description: |-
+        POJO to hold v1-like metric values retrieved from postgres, or synthesized in post-aggregators.
+
+        Note this class does not hold metrics directly from profiles; those are packaged in the V1
+        protobuf message MetricComponentMessage.
+    ColumnMetricEntity:
+      type: object
+      properties:
+        groupBy:
+          description: "helper function for grouping collections of this class. Group\
+            \ by segmentKeyValue if non-null, otherwise by timestamp."
+          allOf:
+          - $ref: '#/components/schemas/Object'
+        id:
+          type: integer
+          format: int32
+        timestamp:
+          type: integer
+          format: int64
+        segmentKeyValue:
+          type: string
+        columnName:
+          type: string
+        metricPath:
+          type: string
+        longs:
+          type: integer
+          format: int64
+        doubles:
+          type: number
+          format: double
+        strings:
+          type: string
+      description: A generic class used to receive raw data from Postgres. Used for
+        a variety of queries that may aggregate results by timestamp or segmentKeyValue
+        (e.g. age=old).
+    ColumnSchema:
+      required:
+      - classifier
+      - dataType
+      - discreteness
+      type: object
+      properties:
+        discreteness:
+          $ref: '#/components/schemas/DiscretenessType'
+        classifier:
+          $ref: '#/components/schemas/Classifier'
+        dataType:
+          $ref: '#/components/schemas/DataType'
+    ColumnStatistic:
+      type: object
+      properties:
+        numAnomalies:
+          type: integer
+          format: int64
+        column:
+          type: string
+        analyzerType:
+          type: string
+        oldestAnomalyDatasetTimestamp:
+          type: integer
+          format: int64
+        earliestAnomalyDatasetTimestamp:
+          type: integer
+          format: int64
+    ComparisonContainer:
+      type: object
+      properties:
+        comparison_expected:
+          type: string
+        comparison_observed:
+          type: string
+    ConfigPatchRequest:
+      required:
+      - datasetId
+      - orgId
+      type: object
+      properties:
+        orgId:
+          type: string
+        datasetId:
+          type: string
+        version1:
+          type: integer
+          format: int64
+        version2:
+          type: integer
+          format: int64
+    ConfusionMatrix:
+      required:
+      - counts
+      - labels
+      - predictions_field
+      - score_field
+      - target_field
+      type: object
+      properties:
+        labels:
+          type: array
+          items:
+            type: string
+        target_field:
+          type: string
+        predictions_field:
+          type: string
+        score_field:
+          type: string
+        counts:
+          type: array
+          items:
+            type: array
+            items:
+              type: integer
+              format: int64
+    CopyDataRequest:
+      required:
+      - sourceDatasetId
+      - sourceOrgId
+      - targetDatasetId
+      - targetOrgId
+      type: object
+      properties:
+        interval:
+          type: string
+        sourceOrgId:
+          type: string
+        targetOrgId:
+          type: string
+        sourceDatasetId:
+          type: string
+        targetDatasetId:
+          type: string
+        profileId:
+          type: string
+    CorrelatedAlerts:
+      type: object
+      properties:
+        alertingSegments:
+          type: array
+          items:
+            type: string
+    CountAnalyzerRunRequest:
+      required:
+      - datasetIds
+      - interval
+      - orgId
+      type: object
+      properties:
+        orgId:
+          type: string
+        datasetIds:
+          type: array
+          items:
+            type: string
+        analyzerIds:
+          type: array
+          items:
+            type: string
+        monitorIds:
+          type: array
+          items:
+            type: string
+        interval:
+          type: string
+    CountAnalyzerRunResult:
+      required:
+      - count
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int64
+    DataDeletionPreviewResponse:
+      required:
+      - earliest
+      - latest
+      - numRows
+      - uniqueDates
+      type: object
+      properties:
+        numRows:
+          type: integer
+          format: int64
+        uniqueDates:
+          type: integer
+          format: int64
+        earliest:
+          type: integer
+          format: int64
+        latest:
+          type: integer
+          format: int64
+    DataGranularity:
+      type: string
+      enum:
+      - hourly
+      - daily
+      - weekly
+      - monthly
+      - all
+    DataType:
+      type: string
+      enum:
+      - INTEGRAL
+      - FRACTIONAL
+      - BOOLEAN
+      - STRING
+      - UNKNOWN
+      - "NULL"
+      - UNRECOGNIZED
+    DatasetAndColumn:
+      required:
+      - datasetId
+      - metric
+      type: object
+      properties:
+        datasetId:
+          type: string
+        columnNames:
+          type: array
+          items:
+            type: string
+        metric:
+          type: string
+      description: "Part of numeric metric REST queries, producing results used in\
+        \ tracing. This class specifies which metric is to be applied to an optional\
+        \ list of features (\\`columnNames\\`). If \\`columnNames\\` is unspecified,\
+        \ metric will be applied to all features."
+    DeleteAnalysisRequest:
+      required:
+      - datasetId
+      - orgId
+      type: object
+      properties:
+        orgId:
+          type: string
+        datasetId:
+          type: string
+        delete_gte:
+          type: integer
+          format: int64
+        delete_lt:
+          type: integer
+          format: int64
+    DeleteAnalyzerResult:
+      required:
+      - creationTimestamp
+      - datasetId
+      - id
+      - orgId
+      - status
+      - updatedTimestamp
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          nullable: true
+        status:
+          $ref: '#/components/schemas/DeletionStatus'
+        creationTimestamp:
+          type: integer
+          format: int64
+        updatedTimestamp:
+          type: integer
+          format: int64
+        orgId:
+          type: string
+        datasetId:
+          type: string
+        delete_gte:
+          type: integer
+          format: int64
+        delete_lt:
+          type: integer
+          format: int64
+    DeleteProfile:
+      required:
+      - creationTimestamp
+      - datasetId
+      - id
+      - orgId
+      - status
+      - updatedTimestamp
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          nullable: true
+        status:
+          $ref: '#/components/schemas/DeletionStatus'
+        creationTimestamp:
+          type: integer
+          format: int64
+        updatedTimestamp:
+          type: integer
+          format: int64
+        orgId:
+          type: string
+        datasetId:
+          type: string
+        delete_gte:
+          type: integer
+          format: int64
+        delete_lt:
+          type: integer
+          format: int64
+        beforeUploadTs:
+          type: integer
+          format: int64
+    DeleteProfileRequest:
+      required:
+      - datasetId
+      - orgId
+      type: object
+      properties:
+        orgId:
+          type: string
+        datasetId:
+          type: string
+        delete_gte:
+          type: integer
+          format: int64
+        delete_lt:
+          type: integer
+          format: int64
+        beforeUploadTs:
+          type: integer
+          format: int64
+    DeletionReport:
+      required:
+      - deletionRequestsRan
+      type: object
+      properties:
+        deletionRequestsRan:
+          type: integer
+          format: int32
+    DeletionStatus:
+      type: string
+      enum:
+      - PENDING
+      - PROCESSING
+      - COMPLETED
+      - CANCELED
+    DescriptorProtos.EnumOptions:
+      allOf:
+      - $ref: '#/components/schemas/GeneratedMessageV3.ExtendableMessage_DescriptorProtos.EnumOptions_'
+      - $ref: '#/components/schemas/GeneratedMessageV3'
+      - $ref: '#/components/schemas/AbstractMessage'
+      - $ref: '#/components/schemas/AbstractMessageLite_AbstractMessageLite.AbstractMessageLite.Builder_AbstractMessageLite.AbstractMessageLite.Builder__'
+      - type: object
+        properties:
+          unknownFields:
+            $ref: '#/components/schemas/UnknownFieldSet'
+          allowAlias:
+            type: boolean
+          deprecated:
+            type: boolean
+          uninterpretedOptionList:
+            type: array
+            items:
+              $ref: '#/components/schemas/DescriptorProtos.UninterpretedOption'
+          uninterpretedOptionOrBuilderList:
+            type: array
+            items:
+              $ref: '#/components/schemas/DescriptorProtos.UninterpretedOptionOrBuilder'
+          uninterpretedOptionCount:
+            type: integer
+            format: int32
+          initialized:
+            type: boolean
+          serializedSize:
+            type: integer
+            format: int32
+          parserForType:
+            $ref: '#/components/schemas/Parser_DescriptorProtos.EnumOptions_'
+          defaultInstanceForType:
+            $ref: '#/components/schemas/Message'
+    DescriptorProtos.EnumValueOptions:
+      allOf:
+      - $ref: '#/components/schemas/GeneratedMessageV3.ExtendableMessage_DescriptorProtos.EnumValueOptions_'
+      - $ref: '#/components/schemas/GeneratedMessageV3'
+      - $ref: '#/components/schemas/AbstractMessage'
+      - $ref: '#/components/schemas/AbstractMessageLite_AbstractMessageLite.AbstractMessageLite.Builder_AbstractMessageLite.AbstractMessageLite.Builder__'
+      - type: object
+        properties:
+          unknownFields:
+            $ref: '#/components/schemas/UnknownFieldSet'
+          deprecated:
+            type: boolean
+          uninterpretedOptionList:
+            type: array
+            items:
+              $ref: '#/components/schemas/DescriptorProtos.UninterpretedOption'
+          uninterpretedOptionOrBuilderList:
+            type: array
+            items:
+              $ref: '#/components/schemas/DescriptorProtos.UninterpretedOptionOrBuilder'
+          uninterpretedOptionCount:
+            type: integer
+            format: int32
+          initialized:
+            type: boolean
+          serializedSize:
+            type: integer
+            format: int32
+          parserForType:
+            $ref: '#/components/schemas/Parser_DescriptorProtos.EnumValueOptions_'
+          defaultInstanceForType:
+            $ref: '#/components/schemas/Message'
+    DescriptorProtos.FieldOptions:
+      allOf:
+      - $ref: '#/components/schemas/GeneratedMessageV3.ExtendableMessage_DescriptorProtos.FieldOptions_'
+      - $ref: '#/components/schemas/GeneratedMessageV3'
+      - $ref: '#/components/schemas/AbstractMessage'
+      - $ref: '#/components/schemas/AbstractMessageLite_AbstractMessageLite.AbstractMessageLite.Builder_AbstractMessageLite.AbstractMessageLite.Builder__'
+      - type: object
+        properties:
+          unknownFields:
+            $ref: '#/components/schemas/UnknownFieldSet'
+          ctype:
+            $ref: '#/components/schemas/DescriptorProtos.FieldOptions.CType'
+          packed:
+            type: boolean
+          jstype:
+            $ref: '#/components/schemas/DescriptorProtos.FieldOptions.JSType'
+          lazy:
+            type: boolean
+          unverifiedLazy:
+            type: boolean
+          deprecated:
+            type: boolean
+          weak:
+            type: boolean
+          uninterpretedOptionList:
+            type: array
+            items:
+              $ref: '#/components/schemas/DescriptorProtos.UninterpretedOption'
+          uninterpretedOptionOrBuilderList:
+            type: array
+            items:
+              $ref: '#/components/schemas/DescriptorProtos.UninterpretedOptionOrBuilder'
+          uninterpretedOptionCount:
+            type: integer
+            format: int32
+          initialized:
+            type: boolean
+          serializedSize:
+            type: integer
+            format: int32
+          parserForType:
+            $ref: '#/components/schemas/Parser_DescriptorProtos.FieldOptions_'
+          defaultInstanceForType:
+            $ref: '#/components/schemas/Message'
+    DescriptorProtos.FieldOptions.CType:
+      type: string
+      enum:
+      - STRING
+      - CORD
+      - STRING_PIECE
+    DescriptorProtos.FieldOptions.JSType:
+      type: string
+      enum:
+      - JS_NORMAL
+      - JS_STRING
+      - JS_NUMBER
+    DescriptorProtos.FileOptions:
+      allOf:
+      - $ref: '#/components/schemas/GeneratedMessageV3.ExtendableMessage_DescriptorProtos.FileOptions_'
+      - $ref: '#/components/schemas/GeneratedMessageV3'
+      - $ref: '#/components/schemas/AbstractMessage'
+      - $ref: '#/components/schemas/AbstractMessageLite_AbstractMessageLite.AbstractMessageLite.Builder_AbstractMessageLite.AbstractMessageLite.Builder__'
+      - type: object
+        properties:
+          unknownFields:
+            $ref: '#/components/schemas/UnknownFieldSet'
+          javaPackage:
+            type: string
+          javaPackageBytes:
+            $ref: '#/components/schemas/ByteString'
+          javaOuterClassname:
+            type: string
+          javaOuterClassnameBytes:
+            $ref: '#/components/schemas/ByteString'
+          javaMultipleFiles:
+            type: boolean
+          javaGenerateEqualsAndHash:
+            type: boolean
+            deprecated: true
+          javaStringCheckUtf8:
+            type: boolean
+          optimizeFor:
+            $ref: '#/components/schemas/DescriptorProtos.FileOptions.OptimizeMode'
+          goPackage:
+            type: string
+          goPackageBytes:
+            $ref: '#/components/schemas/ByteString'
+          ccGenericServices:
+            type: boolean
+          javaGenericServices:
+            type: boolean
+          pyGenericServices:
+            type: boolean
+          phpGenericServices:
+            type: boolean
+          deprecated:
+            type: boolean
+          ccEnableArenas:
+            type: boolean
+          objcClassPrefix:
+            type: string
+          objcClassPrefixBytes:
+            $ref: '#/components/schemas/ByteString'
+          csharpNamespace:
+            type: string
+          csharpNamespaceBytes:
+            $ref: '#/components/schemas/ByteString'
+          swiftPrefix:
+            type: string
+          swiftPrefixBytes:
+            $ref: '#/components/schemas/ByteString'
+          phpClassPrefix:
+            type: string
+          phpClassPrefixBytes:
+            $ref: '#/components/schemas/ByteString'
+          phpNamespace:
+            type: string
+          phpNamespaceBytes:
+            $ref: '#/components/schemas/ByteString'
+          phpMetadataNamespace:
+            type: string
+          phpMetadataNamespaceBytes:
+            $ref: '#/components/schemas/ByteString'
+          rubyPackage:
+            type: string
+          rubyPackageBytes:
+            $ref: '#/components/schemas/ByteString'
+          uninterpretedOptionList:
+            type: array
+            items:
+              $ref: '#/components/schemas/DescriptorProtos.UninterpretedOption'
+          uninterpretedOptionOrBuilderList:
+            type: array
+            items:
+              $ref: '#/components/schemas/DescriptorProtos.UninterpretedOptionOrBuilder'
+          uninterpretedOptionCount:
+            type: integer
+            format: int32
+          initialized:
+            type: boolean
+          serializedSize:
+            type: integer
+            format: int32
+          parserForType:
+            $ref: '#/components/schemas/Parser_DescriptorProtos.FileOptions_'
+          defaultInstanceForType:
+            $ref: '#/components/schemas/Message'
+    DescriptorProtos.FileOptions.OptimizeMode:
+      type: string
+      enum:
+      - SPEED
+      - CODE_SIZE
+      - LITE_RUNTIME
+    DescriptorProtos.MessageOptions:
+      allOf:
+      - $ref: '#/components/schemas/GeneratedMessageV3.ExtendableMessage_DescriptorProtos.MessageOptions_'
+      - $ref: '#/components/schemas/GeneratedMessageV3'
+      - $ref: '#/components/schemas/AbstractMessage'
+      - $ref: '#/components/schemas/AbstractMessageLite_AbstractMessageLite.AbstractMessageLite.Builder_AbstractMessageLite.AbstractMessageLite.Builder__'
+      - type: object
+        properties:
+          unknownFields:
+            $ref: '#/components/schemas/UnknownFieldSet'
+          messageSetWireFormat:
+            type: boolean
+          noStandardDescriptorAccessor:
+            type: boolean
+          deprecated:
+            type: boolean
+          mapEntry:
+            type: boolean
+          uninterpretedOptionList:
+            type: array
+            items:
+              $ref: '#/components/schemas/DescriptorProtos.UninterpretedOption'
+          uninterpretedOptionOrBuilderList:
+            type: array
+            items:
+              $ref: '#/components/schemas/DescriptorProtos.UninterpretedOptionOrBuilder'
+          uninterpretedOptionCount:
+            type: integer
+            format: int32
+          initialized:
+            type: boolean
+          serializedSize:
+            type: integer
+            format: int32
+          parserForType:
+            $ref: '#/components/schemas/Parser_DescriptorProtos.MessageOptions_'
+          defaultInstanceForType:
+            $ref: '#/components/schemas/Message'
+    DescriptorProtos.MethodOptions:
+      allOf:
+      - $ref: '#/components/schemas/GeneratedMessageV3.ExtendableMessage_DescriptorProtos.MethodOptions_'
+      - $ref: '#/components/schemas/GeneratedMessageV3'
+      - $ref: '#/components/schemas/AbstractMessage'
+      - $ref: '#/components/schemas/AbstractMessageLite_AbstractMessageLite.AbstractMessageLite.Builder_AbstractMessageLite.AbstractMessageLite.Builder__'
+      - type: object
+        properties:
+          unknownFields:
+            $ref: '#/components/schemas/UnknownFieldSet'
+          deprecated:
+            type: boolean
+          idempotencyLevel:
+            $ref: '#/components/schemas/DescriptorProtos.MethodOptions.IdempotencyLevel'
+          uninterpretedOptionList:
+            type: array
+            items:
+              $ref: '#/components/schemas/DescriptorProtos.UninterpretedOption'
+          uninterpretedOptionOrBuilderList:
+            type: array
+            items:
+              $ref: '#/components/schemas/DescriptorProtos.UninterpretedOptionOrBuilder'
+          uninterpretedOptionCount:
+            type: integer
+            format: int32
+          initialized:
+            type: boolean
+          serializedSize:
+            type: integer
+            format: int32
+          parserForType:
+            $ref: '#/components/schemas/Parser_DescriptorProtos.MethodOptions_'
+          defaultInstanceForType:
+            $ref: '#/components/schemas/Message'
+    DescriptorProtos.MethodOptions.IdempotencyLevel:
+      type: string
+      enum:
+      - IDEMPOTENCY_UNKNOWN
+      - NO_SIDE_EFFECTS
+      - IDEMPOTENT
+    DescriptorProtos.OneofOptions:
+      allOf:
+      - $ref: '#/components/schemas/GeneratedMessageV3.ExtendableMessage_DescriptorProtos.OneofOptions_'
+      - $ref: '#/components/schemas/GeneratedMessageV3'
+      - $ref: '#/components/schemas/AbstractMessage'
+      - $ref: '#/components/schemas/AbstractMessageLite_AbstractMessageLite.AbstractMessageLite.Builder_AbstractMessageLite.AbstractMessageLite.Builder__'
+      - type: object
+        properties:
+          unknownFields:
+            $ref: '#/components/schemas/UnknownFieldSet'
+          uninterpretedOptionList:
+            type: array
+            items:
+              $ref: '#/components/schemas/DescriptorProtos.UninterpretedOption'
+          uninterpretedOptionOrBuilderList:
+            type: array
+            items:
+              $ref: '#/components/schemas/DescriptorProtos.UninterpretedOptionOrBuilder'
+          uninterpretedOptionCount:
+            type: integer
+            format: int32
+          initialized:
+            type: boolean
+          serializedSize:
+            type: integer
+            format: int32
+          parserForType:
+            $ref: '#/components/schemas/Parser_DescriptorProtos.OneofOptions_'
+          defaultInstanceForType:
+            $ref: '#/components/schemas/Message'
+    DescriptorProtos.ServiceOptions:
+      allOf:
+      - $ref: '#/components/schemas/GeneratedMessageV3.ExtendableMessage_DescriptorProtos.ServiceOptions_'
+      - $ref: '#/components/schemas/GeneratedMessageV3'
+      - $ref: '#/components/schemas/AbstractMessage'
+      - $ref: '#/components/schemas/AbstractMessageLite_AbstractMessageLite.AbstractMessageLite.Builder_AbstractMessageLite.AbstractMessageLite.Builder__'
+      - type: object
+        properties:
+          unknownFields:
+            $ref: '#/components/schemas/UnknownFieldSet'
+          deprecated:
+            type: boolean
+          uninterpretedOptionList:
+            type: array
+            items:
+              $ref: '#/components/schemas/DescriptorProtos.UninterpretedOption'
+          uninterpretedOptionOrBuilderList:
+            type: array
+            items:
+              $ref: '#/components/schemas/DescriptorProtos.UninterpretedOptionOrBuilder'
+          uninterpretedOptionCount:
+            type: integer
+            format: int32
+          initialized:
+            type: boolean
+          serializedSize:
+            type: integer
+            format: int32
+          parserForType:
+            $ref: '#/components/schemas/Parser_DescriptorProtos.ServiceOptions_'
+          defaultInstanceForType:
+            $ref: '#/components/schemas/Message'
+    DescriptorProtos.UninterpretedOption:
+      allOf:
+      - $ref: '#/components/schemas/GeneratedMessageV3'
+      - $ref: '#/components/schemas/AbstractMessage'
+      - $ref: '#/components/schemas/AbstractMessageLite_AbstractMessageLite.AbstractMessageLite.Builder_AbstractMessageLite.AbstractMessageLite.Builder__'
+      - type: object
+        properties:
+          unknownFields:
+            $ref: '#/components/schemas/UnknownFieldSet'
+          nameList:
+            type: array
+            items:
+              $ref: '#/components/schemas/DescriptorProtos.UninterpretedOption.NamePart'
+          nameOrBuilderList:
+            type: array
+            items:
+              $ref: '#/components/schemas/DescriptorProtos.UninterpretedOption.NamePartOrBuilder'
+          nameCount:
+            type: integer
+            format: int32
+          identifierValue:
+            type: string
+          identifierValueBytes:
+            $ref: '#/components/schemas/ByteString'
+          positiveIntValue:
+            type: integer
+            format: int64
+          negativeIntValue:
+            type: integer
+            format: int64
+          doubleValue:
+            type: number
+            format: double
+          stringValue:
+            $ref: '#/components/schemas/ByteString'
+          aggregateValue:
+            type: string
+          aggregateValueBytes:
+            $ref: '#/components/schemas/ByteString'
+          initialized:
+            type: boolean
+          serializedSize:
+            type: integer
+            format: int32
+          parserForType:
+            $ref: '#/components/schemas/Parser_DescriptorProtos.UninterpretedOption_'
+          defaultInstanceForType:
+            $ref: '#/components/schemas/Message'
+    DescriptorProtos.UninterpretedOption.NamePart:
+      allOf:
+      - $ref: '#/components/schemas/GeneratedMessageV3'
+      - $ref: '#/components/schemas/AbstractMessage'
+      - $ref: '#/components/schemas/AbstractMessageLite_AbstractMessageLite.AbstractMessageLite.Builder_AbstractMessageLite.AbstractMessageLite.Builder__'
+      - type: object
+        properties:
+          unknownFields:
+            $ref: '#/components/schemas/UnknownFieldSet'
+          namePart:
+            type: string
+          namePartBytes:
+            $ref: '#/components/schemas/ByteString'
+          isExtension:
+            type: boolean
+          initialized:
+            type: boolean
+          serializedSize:
+            type: integer
+            format: int32
+          parserForType:
+            $ref: '#/components/schemas/Parser_DescriptorProtos.UninterpretedOption.NamePart_'
+          defaultInstanceForType:
+            $ref: '#/components/schemas/Message'
+    DescriptorProtos.UninterpretedOption.NamePartOrBuilder:
+      allOf:
+      - $ref: '#/components/schemas/MessageOrBuilder'
+      - $ref: '#/components/schemas/MessageLiteOrBuilder'
+      - type: object
+        properties:
+          namePart:
+            type: string
+          namePartBytes:
+            $ref: '#/components/schemas/ByteString'
+          isExtension:
+            type: boolean
+    DescriptorProtos.UninterpretedOptionOrBuilder:
+      allOf:
+      - $ref: '#/components/schemas/MessageOrBuilder'
+      - $ref: '#/components/schemas/MessageLiteOrBuilder'
+      - type: object
+        properties:
+          nameList:
+            type: array
+            items:
+              $ref: '#/components/schemas/DescriptorProtos.UninterpretedOption.NamePart'
+          nameCount:
+            type: integer
+            format: int32
+          nameOrBuilderList:
+            type: array
+            items:
+              $ref: '#/components/schemas/DescriptorProtos.UninterpretedOption.NamePartOrBuilder'
+          identifierValue:
+            type: string
+          identifierValueBytes:
+            $ref: '#/components/schemas/ByteString'
+          positiveIntValue:
+            type: integer
+            format: int64
+          negativeIntValue:
+            type: integer
+            format: int64
+          doubleValue:
+            type: number
+            format: double
+          stringValue:
+            $ref: '#/components/schemas/ByteString'
+          aggregateValue:
+            type: string
+          aggregateValueBytes:
+            $ref: '#/components/schemas/ByteString'
+    Descriptors.Descriptor:
+      allOf:
+      - $ref: '#/components/schemas/Descriptors.GenericDescriptor'
+      - type: object
+        properties:
+          index:
+            type: integer
+            format: int32
+          name:
+            type: string
+          fullName:
+            type: string
+          file:
+            $ref: '#/components/schemas/Descriptors.FileDescriptor'
+          containingType:
+            $ref: '#/components/schemas/Descriptors.Descriptor'
+          options:
+            $ref: '#/components/schemas/DescriptorProtos.MessageOptions'
+          fields:
+            type: array
+            items:
+              $ref: '#/components/schemas/Descriptors.FieldDescriptor'
+          oneofs:
+            type: array
+            items:
+              $ref: '#/components/schemas/Descriptors.OneofDescriptor'
+          realOneofs:
+            type: array
+            items:
+              $ref: '#/components/schemas/Descriptors.OneofDescriptor'
+          extensions:
+            type: array
+            items:
+              $ref: '#/components/schemas/Descriptors.FieldDescriptor'
+          nestedTypes:
+            type: array
+            items:
+              $ref: '#/components/schemas/Descriptors.Descriptor'
+          enumTypes:
+            type: array
+            items:
+              $ref: '#/components/schemas/Descriptors.EnumDescriptor'
+          extendable:
+            type: boolean
+    Descriptors.EnumDescriptor:
+      allOf:
+      - $ref: '#/components/schemas/Descriptors.GenericDescriptor'
+      - type: object
+        properties:
+          index:
+            type: integer
+            format: int32
+          name:
+            type: string
+          fullName:
+            type: string
+          file:
+            $ref: '#/components/schemas/Descriptors.FileDescriptor'
+          containingType:
+            $ref: '#/components/schemas/Descriptors.Descriptor'
+          options:
+            $ref: '#/components/schemas/DescriptorProtos.EnumOptions'
+          values:
+            type: array
+            items:
+              $ref: '#/components/schemas/Descriptors.EnumValueDescriptor'
+    Descriptors.EnumValueDescriptor:
+      allOf:
+      - $ref: '#/components/schemas/Descriptors.GenericDescriptor'
+      - type: object
+        properties:
+          index:
+            type: integer
+            format: int32
+          name:
+            type: string
+          number:
+            type: integer
+            format: int32
+          fullName:
+            type: string
+          file:
+            $ref: '#/components/schemas/Descriptors.FileDescriptor'
+          type:
+            $ref: '#/components/schemas/Descriptors.EnumDescriptor'
+          options:
+            $ref: '#/components/schemas/DescriptorProtos.EnumValueOptions'
+    Descriptors.FieldDescriptor:
+      allOf:
+      - $ref: '#/components/schemas/Descriptors.GenericDescriptor'
+      - type: object
+        properties:
+          index:
+            type: integer
+            format: int32
+          name:
+            type: string
+          number:
+            type: integer
+            format: int32
+          fullName:
+            type: string
+          jsonName:
+            type: string
+          javaType:
+            $ref: '#/components/schemas/Descriptors.FieldDescriptor.JavaType'
+          liteJavaType:
+            $ref: '#/components/schemas/WireFormat.JavaType'
+          file:
+            $ref: '#/components/schemas/Descriptors.FileDescriptor'
+          type:
+            $ref: '#/components/schemas/Descriptors.FieldDescriptor.Type'
+          liteType:
+            $ref: '#/components/schemas/WireFormat.FieldType'
+          mapField:
+            type: boolean
+          required:
+            type: boolean
+          optional:
+            type: boolean
+          repeated:
+            type: boolean
+          packed:
+            type: boolean
+          packable:
+            type: boolean
+          defaultValue:
+            $ref: '#/components/schemas/Object'
+          options:
+            $ref: '#/components/schemas/DescriptorProtos.FieldOptions'
+          extension:
+            type: boolean
+          containingType:
+            $ref: '#/components/schemas/Descriptors.Descriptor'
+          containingOneof:
+            $ref: '#/components/schemas/Descriptors.OneofDescriptor'
+          realContainingOneof:
+            $ref: '#/components/schemas/Descriptors.OneofDescriptor'
+          extensionScope:
+            $ref: '#/components/schemas/Descriptors.Descriptor'
+          messageType:
+            $ref: '#/components/schemas/Descriptors.Descriptor'
+          enumType:
+            $ref: '#/components/schemas/Internal.EnumLiteMap_Internal.EnumLite_'
+    Descriptors.FieldDescriptor.JavaType:
+      type: string
+      enum:
+      - INT
+      - LONG
+      - FLOAT
+      - DOUBLE
+      - BOOLEAN
+      - STRING
+      - BYTE_STRING
+      - ENUM
+      - MESSAGE
+    Descriptors.FieldDescriptor.Type:
+      type: string
+      enum:
+      - DOUBLE
+      - FLOAT
+      - INT64
+      - UINT64
+      - INT32
+      - FIXED64
+      - FIXED32
+      - BOOL
+      - STRING
+      - GROUP
+      - MESSAGE
+      - BYTES
+      - UINT32
+      - ENUM
+      - SFIXED32
+      - SFIXED64
+      - SINT32
+      - SINT64
+    Descriptors.FileDescriptor:
+      allOf:
+      - $ref: '#/components/schemas/Descriptors.GenericDescriptor'
+      - type: object
+        properties:
+          name:
+            type: string
+          file:
+            $ref: '#/components/schemas/Descriptors.FileDescriptor'
+          fullName:
+            type: string
+          package:
+            type: string
+          options:
+            $ref: '#/components/schemas/DescriptorProtos.FileOptions'
+          messageTypes:
+            type: array
+            items:
+              $ref: '#/components/schemas/Descriptors.Descriptor'
+          enumTypes:
+            type: array
+            items:
+              $ref: '#/components/schemas/Descriptors.EnumDescriptor'
+          services:
+            type: array
+            items:
+              $ref: '#/components/schemas/Descriptors.ServiceDescriptor'
+          extensions:
+            type: array
+            items:
+              $ref: '#/components/schemas/Descriptors.FieldDescriptor'
+          dependencies:
+            type: array
+            items:
+              $ref: '#/components/schemas/Descriptors.FileDescriptor'
+          publicDependencies:
+            type: array
+            items:
+              $ref: '#/components/schemas/Descriptors.FileDescriptor'
+          syntax:
+            $ref: '#/components/schemas/Descriptors.FileDescriptor.Syntax'
+    Descriptors.FileDescriptor.Syntax:
+      type: string
+      enum:
+      - UNKNOWN
+      - PROTO2
+      - PROTO3
+    Descriptors.GenericDescriptor:
+      type: object
+      properties:
+        name:
+          type: string
+        fullName:
+          type: string
+        file:
+          $ref: '#/components/schemas/Descriptors.FileDescriptor'
+    Descriptors.MethodDescriptor:
+      allOf:
+      - $ref: '#/components/schemas/Descriptors.GenericDescriptor'
+      - type: object
+        properties:
+          index:
+            type: integer
+            format: int32
+          name:
+            type: string
+          fullName:
+            type: string
+          file:
+            $ref: '#/components/schemas/Descriptors.FileDescriptor'
+          service:
+            $ref: '#/components/schemas/Descriptors.ServiceDescriptor'
+          inputType:
+            $ref: '#/components/schemas/Descriptors.Descriptor'
+          outputType:
+            $ref: '#/components/schemas/Descriptors.Descriptor'
+          clientStreaming:
+            type: boolean
+          serverStreaming:
+            type: boolean
+          options:
+            $ref: '#/components/schemas/DescriptorProtos.MethodOptions'
+    Descriptors.OneofDescriptor:
+      allOf:
+      - $ref: '#/components/schemas/Descriptors.GenericDescriptor'
+      - type: object
+        properties:
+          index:
+            type: integer
+            format: int32
+          name:
+            type: string
+          file:
+            $ref: '#/components/schemas/Descriptors.FileDescriptor'
+          fullName:
+            type: string
+          containingType:
+            $ref: '#/components/schemas/Descriptors.Descriptor'
+          fieldCount:
+            type: integer
+            format: int32
+          options:
+            $ref: '#/components/schemas/DescriptorProtos.OneofOptions'
+          synthetic:
+            type: boolean
+          fields:
+            type: array
+            items:
+              $ref: '#/components/schemas/Descriptors.FieldDescriptor'
+    Descriptors.ServiceDescriptor:
+      allOf:
+      - $ref: '#/components/schemas/Descriptors.GenericDescriptor'
+      - type: object
+        properties:
+          index:
+            type: integer
+            format: int32
+          name:
+            type: string
+          fullName:
+            type: string
+          file:
+            $ref: '#/components/schemas/Descriptors.FileDescriptor'
+          options:
+            $ref: '#/components/schemas/DescriptorProtos.ServiceOptions'
+          methods:
+            type: array
+            items:
+              $ref: '#/components/schemas/Descriptors.MethodDescriptor'
+    DiagnosticAnalyzerGateResponse:
+      type: object
+      properties:
+        uploadPattern:
+          $ref: '#/components/schemas/UploadPattern'
+        dataReadinessDurationChecks:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnalyzerGateAnalysisOutput'
+        batchCooldownPeriodChecks:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnalyzerGateAnalysisOutput'
+    DiagnosticOutput:
+      required:
+      - observation
+      - observationText
+      - status
+      type: object
+      properties:
+        observation:
+          $ref: '#/components/schemas/GeneralObservation'
+        observationText:
+          type: string
+        status:
+          $ref: '#/components/schemas/SuccessEnum'
+    DiagnosticResponse:
+      type: object
+      properties:
+        analysisRan:
+          type: string
+        datasetTimestamp:
+          type: string
+        correlatedAlerts:
+          $ref: '#/components/schemas/CorrelatedAlerts'
+        diagnostics:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiagnosticOutput'
+        analyzerConfigTimeOfAnalysis:
+          $ref: '#/components/schemas/Analyzer'
+        analyzerConfigLatest:
+          $ref: '#/components/schemas/Analyzer'
+        analysis:
+          $ref: '#/components/schemas/AnalyzerResultResponse'
+    DiffContainer:
+      type: object
+      properties:
+        diff_metricValue:
+          type: number
+          format: double
+        diff_threshold:
+          type: number
+          format: double
+        diff_mode:
+          $ref: '#/components/schemas/DiffMode'
+    DiffMode:
+      type: string
+      enum:
+      - pct
+      - abs
+    DiscretenessType:
+      type: string
+      enum:
+      - discrete
+      - continuous
+    DriftContainer:
+      type: object
+      properties:
+        drift_metricValue:
+          type: number
+          format: double
+        drift_threshold:
+          type: number
+          format: double
+    Duration:
+      type: object
+      properties:
+        units:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemporalUnit'
+        zero:
+          type: boolean
+        negative:
+          type: boolean
+        seconds:
+          type: integer
+          format: int64
+        nano:
+          type: integer
+          format: int32
+    EntitySchema:
+      required:
+      - columns
+      - metadata
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        columns:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ColumnSchema'
+    EvaluateTargetMatrixRequest:
+      type: object
+      properties:
+        profileTags:
+          type: array
+          items:
+            $ref: '#/components/schemas/SegmentTag'
+        targetMatrix:
+          $ref: '#/components/schemas/TargetMatrix'
+    EvaluateTargetMatrixResponse:
+      required:
+      - segments
+      type: object
+      properties:
+        segments:
+          type: array
+          items:
+            type: string
+    FailureType:
+      type: string
+      enum:
+      - MinThresholdExceedsMaxThreshold
+      - RollupBaselineRequired
+      - InvalidJson
+      - InsufficientBaseline
+      - CalculationException
+      - IncompatibleTypes
+      - ConfigMissingRequiredField
+      - MetricException
+      - NoResults
+      - UnknownCalculation
+      - UnknownMetric
+    FeatureRollup:
+      type: object
+      properties:
+        metrics:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ColumnMetric'
+      description: "Container for feature-level metrics. A key axiom of this container\
+        \ is that there is at-most-one of each type of metric path in the collection,\
+        \ and all metrics in this contains are for the same timestamp and feature\
+        \ name."
+    FrequentStringComparisonContainer:
+      type: object
+      properties:
+        frequentStringComparison_operator:
+          $ref: '#/components/schemas/FrequentStringComparisonOperator'
+        frequentStringComparison_sample:
+          type: array
+          items:
+            type: string
+    FrequentStringComparisonOperator:
+      type: string
+      enum:
+      - target_includes_all_baseline
+      - baseline_includes_all_target
+      - eq
+    GateType:
+      type: string
+      enum:
+      - DATA_READINESS_DURATION
+      - BATCH_COOLDOWN_PERIOD
+    GeneralObservation:
+      type: string
+      enum:
+      - ANALYZER_REMOVED_AFTER_ANALYSIS
+      - ANALYZER_CONFIGURATION_UPDATED_AFTER_ANALYSIS
+      - BASELINE_LATE_DATA
+      - TARGET_LATE_DATA
+      - SCHEMA_CHANGE
+      - DISCRETENESS_CHANGE
+      - SEGMENTS_CHANGE
+    GeneratedMessageV3:
+      allOf:
+      - $ref: '#/components/schemas/AbstractMessage'
+      - $ref: '#/components/schemas/AbstractMessageLite_AbstractMessageLite.AbstractMessageLite.Builder_AbstractMessageLite.AbstractMessageLite.Builder__'
+      - type: object
+        properties:
+          parserForType:
+            $ref: '#/components/schemas/Parser_GeneratedMessageV3_'
+          descriptorForType:
+            $ref: '#/components/schemas/Descriptors.Descriptor'
+          initialized:
+            type: boolean
+          allFields:
+            type: object
+            additionalProperties: true
+          unknownFields:
+            $ref: '#/components/schemas/UnknownFieldSet'
+          serializedSize:
+            type: integer
+            format: int32
+    GeneratedMessageV3.ExtendableMessage_DescriptorProtos.EnumOptions_:
+      allOf:
+      - $ref: '#/components/schemas/GeneratedMessageV3'
+      - $ref: '#/components/schemas/AbstractMessage'
+      - $ref: '#/components/schemas/AbstractMessageLite_AbstractMessageLite.AbstractMessageLite.Builder_AbstractMessageLite.AbstractMessageLite.Builder__'
+      - type: object
+        properties:
+          initialized:
+            type: boolean
+          allFields:
+            type: object
+            additionalProperties: true
+          allFieldsRaw:
+            type: object
+            additionalProperties: true
+    GeneratedMessageV3.ExtendableMessage_DescriptorProtos.EnumValueOptions_:
+      allOf:
+      - $ref: '#/components/schemas/GeneratedMessageV3'
+      - $ref: '#/components/schemas/AbstractMessage'
+      - $ref: '#/components/schemas/AbstractMessageLite_AbstractMessageLite.AbstractMessageLite.Builder_AbstractMessageLite.AbstractMessageLite.Builder__'
+      - type: object
+        properties:
+          initialized:
+            type: boolean
+          allFields:
+            type: object
+            additionalProperties: true
+          allFieldsRaw:
+            type: object
+            additionalProperties: true
+    GeneratedMessageV3.ExtendableMessage_DescriptorProtos.FieldOptions_:
+      allOf:
+      - $ref: '#/components/schemas/GeneratedMessageV3'
+      - $ref: '#/components/schemas/AbstractMessage'
+      - $ref: '#/components/schemas/AbstractMessageLite_AbstractMessageLite.AbstractMessageLite.Builder_AbstractMessageLite.AbstractMessageLite.Builder__'
+      - type: object
+        properties:
+          initialized:
+            type: boolean
+          allFields:
+            type: object
+            additionalProperties: true
+          allFieldsRaw:
+            type: object
+            additionalProperties: true
+    GeneratedMessageV3.ExtendableMessage_DescriptorProtos.FileOptions_:
+      allOf:
+      - $ref: '#/components/schemas/GeneratedMessageV3'
+      - $ref: '#/components/schemas/AbstractMessage'
+      - $ref: '#/components/schemas/AbstractMessageLite_AbstractMessageLite.AbstractMessageLite.Builder_AbstractMessageLite.AbstractMessageLite.Builder__'
+      - type: object
+        properties:
+          initialized:
+            type: boolean
+          allFields:
+            type: object
+            additionalProperties: true
+          allFieldsRaw:
+            type: object
+            additionalProperties: true
+    GeneratedMessageV3.ExtendableMessage_DescriptorProtos.MessageOptions_:
+      allOf:
+      - $ref: '#/components/schemas/GeneratedMessageV3'
+      - $ref: '#/components/schemas/AbstractMessage'
+      - $ref: '#/components/schemas/AbstractMessageLite_AbstractMessageLite.AbstractMessageLite.Builder_AbstractMessageLite.AbstractMessageLite.Builder__'
+      - type: object
+        properties:
+          initialized:
+            type: boolean
+          allFields:
+            type: object
+            additionalProperties: true
+          allFieldsRaw:
+            type: object
+            additionalProperties: true
+    GeneratedMessageV3.ExtendableMessage_DescriptorProtos.MethodOptions_:
+      allOf:
+      - $ref: '#/components/schemas/GeneratedMessageV3'
+      - $ref: '#/components/schemas/AbstractMessage'
+      - $ref: '#/components/schemas/AbstractMessageLite_AbstractMessageLite.AbstractMessageLite.Builder_AbstractMessageLite.AbstractMessageLite.Builder__'
+      - type: object
+        properties:
+          initialized:
+            type: boolean
+          allFields:
+            type: object
+            additionalProperties: true
+          allFieldsRaw:
+            type: object
+            additionalProperties: true
+    GeneratedMessageV3.ExtendableMessage_DescriptorProtos.OneofOptions_:
+      allOf:
+      - $ref: '#/components/schemas/GeneratedMessageV3'
+      - $ref: '#/components/schemas/AbstractMessage'
+      - $ref: '#/components/schemas/AbstractMessageLite_AbstractMessageLite.AbstractMessageLite.Builder_AbstractMessageLite.AbstractMessageLite.Builder__'
+      - type: object
+        properties:
+          initialized:
+            type: boolean
+          allFields:
+            type: object
+            additionalProperties: true
+          allFieldsRaw:
+            type: object
+            additionalProperties: true
+    GeneratedMessageV3.ExtendableMessage_DescriptorProtos.ServiceOptions_:
+      allOf:
+      - $ref: '#/components/schemas/GeneratedMessageV3'
+      - $ref: '#/components/schemas/AbstractMessage'
+      - $ref: '#/components/schemas/AbstractMessageLite_AbstractMessageLite.AbstractMessageLite.Builder_AbstractMessageLite.AbstractMessageLite.Builder__'
+      - type: object
+        properties:
+          initialized:
+            type: boolean
+          allFields:
+            type: object
+            additionalProperties: true
+          allFieldsRaw:
+            type: object
+            additionalProperties: true
+    GetAdHocRunNumEventsRequest:
+      required:
+      - interval
+      - orgId
+      type: object
+      properties:
+        orgId:
+          type: string
+        runId:
+          type: string
+        interval:
+          type: string
+    GetAdHocRunNumEventsResponse:
+      required:
+      - numAdHocEvents
+      type: object
+      properties:
+        numAdHocEvents:
+          type: integer
+          format: int64
+    GetAlertCountsOverTimeSegmented:
+      required:
+      - datasetIds
+      - granularity
+      - interval
+      - orgId
+      - segments
+      type: object
+      properties:
+        orgId:
+          type: string
+        datasetIds:
+          type: array
+          items:
+            type: string
+        granularity:
+          $ref: '#/components/schemas/DataGranularity'
+        segments:
+          type: array
+          items:
+            type: string
+        runIds:
+          type: array
+          items:
+            type: string
+        analyzerIds:
+          type: array
+          items:
+            type: string
+        monitorIds:
+          type: array
+          items:
+            type: string
+        interval:
+          type: string
+        order:
+          $ref: '#/components/schemas/SortOrder'
+        adhoc:
+          type: boolean
+    GetAlertsOverTimeRequest:
+      required:
+      - datasetIds
+      - granularity
+      - interval
+      - orgId
+      type: object
+      properties:
+        orgId:
+          type: string
+        datasetIds:
+          type: array
+          items:
+            type: string
+        granularity:
+          $ref: '#/components/schemas/DataGranularity'
+        segments:
+          type: array
+          items:
+            type: string
+        runIds:
+          type: array
+          items:
+            type: string
+        analyzerIds:
+          type: array
+          items:
+            type: string
+        monitorIds:
+          type: array
+          items:
+            type: string
+        columnNames:
+          type: array
+          items:
+            type: string
+        interval:
+          type: string
+        order:
+          $ref: '#/components/schemas/SortOrder'
+        adhoc:
+          type: boolean
+    GetAlertsOverTimeResponse:
+      required:
+      - anomalies
+      - columnName
+      - datasetId
+      - metric
+      - ts
+      type: object
+      properties:
+        ts:
+          type: integer
+          format: int64
+        datasetId:
+          type: string
+        anomalies:
+          type: integer
+          format: int64
+        columnName:
+          type: string
+        metric:
+          type: string
+    GetAnalyzerResultRequest:
+      required:
+      - datasetIds
+      - interval
+      - orgId
+      type: object
+      properties:
+        orgId:
+          type: string
+        datasetIds:
+          type: array
+          items:
+            type: string
+        metrics:
+          type: array
+          items:
+            type: string
+        columnNames:
+          type: array
+          items:
+            type: string
+        segments:
+          type: array
+          items:
+            type: string
+        monitorIds:
+          type: array
+          items:
+            type: string
+        includeFailures:
+          type: boolean
+        onlyAnomalies:
+          type: boolean
+        adhoc:
+          type: boolean
+        order:
+          $ref: '#/components/schemas/SortOrder'
+        analyzerTypes:
+          type: array
+          items:
+            type: string
+        analyzerIds:
+          type: array
+          items:
+            type: string
+        analysisIds:
+          type: array
+          items:
+            type: string
+        runIds:
+          type: array
+          items:
+            type: string
+        interval:
+          type: string
+        limit:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+    GetAnalyzerRunsRequest:
+      required:
+      - datasetIds
+      - interval
+      - orgId
+      type: object
+      properties:
+        orgId:
+          type: string
+        datasetIds:
+          type: array
+          items:
+            type: string
+        analyzerIds:
+          type: array
+          items:
+            type: string
+        monitorIds:
+          type: array
+          items:
+            type: string
+        interval:
+          type: string
+        limit:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        order:
+          $ref: '#/components/schemas/SortOrder'
+    GetAnomalyCountsRequest:
+      required:
+      - datasetIds
+      - granularity
+      - interval
+      - orgId
+      type: object
+      properties:
+        orgId:
+          type: string
+        datasetIds:
+          type: array
+          items:
+            type: string
+        analyzerIds:
+          type: array
+          items:
+            type: string
+        granularity:
+          $ref: '#/components/schemas/DataGranularity'
+        monitorIds:
+          type: array
+          items:
+            type: string
+        segments:
+          type: array
+          items:
+            type: string
+        excludeSegments:
+          type: array
+          items:
+            type: string
+        runIds:
+          type: array
+          items:
+            type: string
+        columnNames:
+          type: array
+          items:
+            type: string
+        interval:
+          type: string
+        adhoc:
+          type: boolean
+    GetAnomalyCountsResult:
+      required:
+      - anomalies
+      - datasetId
+      - failures
+      - overall
+      - ts
+      type: object
+      properties:
+        ts:
+          type: integer
+          format: int64
+        datasetId:
+          type: string
+        anomalies:
+          type: integer
+          format: int64
+        failures:
+          type: integer
+          format: int64
+        overall:
+          type: integer
+          format: int64
+    GetLatestAnomalyQuery:
+      required:
+      - datasetIds
+      - interval
+      - orgId
+      - segments
+      type: object
+      properties:
+        orgId:
+          type: string
+        datasetIds:
+          type: array
+          items:
+            type: string
+        segments:
+          type: array
+          items:
+            type: string
+        analyzerIds:
+          type: array
+          items:
+            type: string
+        monitorIds:
+          type: array
+          items:
+            type: string
+        columnNames:
+          type: array
+          items:
+            type: string
+        interval:
+          type: string
+    GetLatestAnomalyResponse:
+      required:
+      - datasetId
+      - latest
+      type: object
+      properties:
+        latest:
+          type: integer
+          format: int64
+        datasetId:
+          type: string
+    GetSegmentAnomalyCountsRequest:
+      required:
+      - datasetId
+      - interval
+      - orgId
+      type: object
+      properties:
+        orgId:
+          type: string
+        datasetId:
+          type: string
+        interval:
+          type: string
+        columnNames:
+          type: array
+          items:
+            type: string
+    GetSegmentAnomalyCountsResponse:
+      required:
+      - anomalyCount
+      - segment
+      type: object
+      properties:
+        segment:
+          type: string
+        anomalyCount:
+          type: integer
+          format: int32
+    Granularity:
+      type: string
+      enum:
+      - hourly
+      - daily
+      - weekly
+      - monthly
+    HideSegmentRequest:
+      required:
+      - datasetId
+      - orgId
+      - segment
+      type: object
+      properties:
+        orgId:
+          type: string
+        datasetId:
+          type: string
+        segment:
+          type: string
+    HistogramSummary:
+      allOf:
+      - $ref: '#/components/schemas/GeneratedMessageV3'
+      - $ref: '#/components/schemas/AbstractMessage'
+      - $ref: '#/components/schemas/AbstractMessageLite_AbstractMessageLite.AbstractMessageLite.Builder_AbstractMessageLite.AbstractMessageLite.Builder__'
+      - type: object
+        properties:
+          unknownFields:
+            $ref: '#/components/schemas/UnknownFieldSet'
+          start:
+            type: number
+            format: double
+          end:
+            type: number
+            format: double
+          width:
+            type: number
+            format: double
+          countsList:
+            type: array
+            items:
+              type: integer
+              format: int64
+          countsCount:
+            type: integer
+            format: int32
+          max:
+            type: number
+            format: double
+          min:
+            type: number
+            format: double
+          binsList:
+            type: array
+            items:
+              type: number
+              format: double
+          binsCount:
+            type: integer
+            format: int32
+          "n":
+            type: integer
+            format: int64
+          initialized:
+            type: boolean
+          serializedSize:
+            type: integer
+            format: int32
+          parserForType:
+            $ref: '#/components/schemas/Parser_HistogramSummary_'
+          defaultInstanceForType:
+            $ref: '#/components/schemas/Message'
+    Internal.EnumLiteMap_Internal.EnumLite_:
+      type: object
+    MaxIORequest:
+      required:
+      - datasetId
+      - granularity
+      - interval
+      - orgId
+      - outputColumns
+      type: object
+      properties:
+        orgId:
+          type: string
+        datasetId:
+          type: string
+        interval:
+          type: string
+        segment:
+          type: array
+          items:
+            $ref: '#/components/schemas/SegmentTag'
+        outputColumns:
+          type: array
+          items:
+            type: string
+        granularity:
+          $ref: '#/components/schemas/DataGranularity'
+        order:
+          $ref: '#/components/schemas/SortOrder'
+    MaxIORow:
+      type: object
+      properties:
+        timestamp:
+          type: integer
+          format: int64
+        isOutput:
+          type: boolean
+        maxCount:
+          type: integer
+          format: int64
+    Message:
+      allOf:
+      - $ref: '#/components/schemas/MessageLite'
+      - $ref: '#/components/schemas/MessageLiteOrBuilder'
+      - $ref: '#/components/schemas/MessageOrBuilder'
+      - $ref: '#/components/schemas/MessageLiteOrBuilder'
+      - type: object
+        properties:
+          parserForType:
+            $ref: '#/components/schemas/Parser_Message_'
+    MessageLite:
+      allOf:
+      - $ref: '#/components/schemas/MessageLiteOrBuilder'
+      - type: object
+        properties:
+          serializedSize:
+            type: integer
+            format: int32
+          parserForType:
+            $ref: '#/components/schemas/Parser_MessageLite_'
+    MessageLiteOrBuilder:
+      type: object
+      properties:
+        defaultInstanceForType:
+          $ref: '#/components/schemas/MessageLite'
+        initialized:
+          type: boolean
+    MessageOrBuilder:
+      allOf:
+      - $ref: '#/components/schemas/MessageLiteOrBuilder'
+      - type: object
+        properties:
+          defaultInstanceForType:
+            $ref: '#/components/schemas/MessageLite'
+          initializationErrorString:
+            type: string
+          descriptorForType:
+            $ref: '#/components/schemas/Descriptors.Descriptor'
+          allFields:
+            type: object
+            additionalProperties: true
+          unknownFields:
+            $ref: '#/components/schemas/UnknownFieldSet'
+    Metadata:
+      required:
+      - author
+      - description
+      - schemaVersion
+      - updatedTimestamp
+      - version
+      type: object
+      properties:
+        version:
+          type: integer
+          format: int32
+        schemaVersion:
+          type: integer
+          format: int32
+        updatedTimestamp:
+          type: integer
+          format: int64
+        author:
+          type: string
+        description:
+          type: string
+    MetricSegmentsRequest:
+      required:
+      - columnName
+      - datasetId
+      - interval
+      - metricPath
+      - orgId
+      type: object
+      properties:
+        orgId:
+          type: string
+        datasetId:
+          type: string
+        columnName:
+          type: string
+        interval:
+          type: string
+        metricPath:
+          type: string
+    ModelMetricsRqst:
+      required:
+      - datasetId
+      - interval
+      - orgId
+      type: object
+      properties:
+        orgId:
+          type: string
+        datasetId:
+          type: string
+        interval:
+          type: string
+        segment:
+          type: array
+          items:
+            $ref: '#/components/schemas/SegmentTag'
+        granularity:
+          $ref: '#/components/schemas/DataGranularity'
+        order:
+          $ref: '#/components/schemas/SortOrder'
+    ModelRollup:
+      required:
+      - datasetId
+      - features
+      - timestamp
+      type: object
+      properties:
+        datasetId:
+          type: string
+        timestamp:
+          type: integer
+          format: int64
+        features:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FeatureRollup'
+      example:
+        timestamp: 1671466890007
+        features:
+          alldiffstr:
+            type_boolean:
+              distribution/isdiscrete: true
+            type_double:
+              distribution/stddev: 0
+              cardinality/hll/upper_1: 988.8752774524854
+              distribution/mean: 0
+              cardinality/hll/est: 1001.6676182270559
+              inferredtype/ratio: 1
+              cardinality/hll/lower_1: 1014.7788985022999
+            type_frequentstrings:
+              frequent_items/frequent_strings:
+                numActive: 37
+                mapCapacity: 96
+                maxError: 3
+                items:
+                  "770":
+                    lb: 1
+                    est: 4
+                    ub: 4
+                  "771":
+                    lb: 1
+                    est: 4
+                    ub: 4
+            type_long:
+              distribution/kll/n: 0
+              types/integral: 0
+              counts/n: 1000
+              types/object: 0
+              counts/inf: 0
+              types/fractional: 0
+              counts/nan: 0
+              counts/null: 0
+              types/boolean: 0
+              types/string: 1000
+            type_string:
+              inferredtype/type: STRING
+          alldiffint:
+            type_boolean:
+              distribution/isdiscrete: true
+            type_double:
+              distribution/stddev: 288.8194360957494
+              distribution/kll/max: 0
+            type_frequentstrings:
+              frequent_items/frequent_strings:
+                numActive: 37
+                mapCapacity: 96
+                maxError: 3
+                items:
+                  "770":
+                    lb: 1
+                    est: 4
+                    ub: 4
+                  "771":
+                    lb: 1
+                    est: 4
+                    ub: 4
+            type_histogram:
+              distribution/kll/histogram:
+                width: 83.25
+                counts:
+                - "84"
+                - "84"
+                - "80"
+                - "84"
+                - "84"
+                - "84"
+                - "84"
+                - "80"
+                - "84"
+                - "84"
+                - "84"
+                - "84"
+                max: 999
+                bins:
+                - 0
+                - 83.25
+                - 166.5
+                - 249.75
+                - 333
+                - 416.25
+                - 499.5
+                - 582.75
+                - 666
+                - 749.25
+                - 832.5
+                - 915.75
+                - 999
+                "n": "1000"
+            type_quantile:
+              distribution/kll/quantiles:
+              - 0
+              - 10
+              - 50
+            type_long:
+              ints/min: 0
+              distribution/kll/n: 1000
+              types/integral: 1000
+            type_string:
+              inferredtype/type: UNKNOWN
+    Monitor:
+      required:
+      - actions
+      - analyzerIds
+      - disabled
+      - displayName
+      - id
+      - metadata
+      - mode
+      - schedule
+      - severity
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        id:
+          type: string
+        displayName:
+          type: string
+        analyzerIds:
+          type: array
+          items:
+            type: string
+        schedule:
+          $ref: '#/components/schemas/MonitorSchedule'
+        disabled:
+          type: boolean
+        severity:
+          type: integer
+          format: int32
+        mode:
+          $ref: '#/components/schemas/MonitorMode'
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Action'
+    MonitorConfigV3:
+      type: object
+      properties:
+        id:
+          type: string
+        orgId:
+          type: string
+        schemaVersion:
+          type: integer
+          format: int32
+        datasetId:
+          type: string
+        granularity:
+          $ref: '#/components/schemas/Granularity'
+        entitySchema:
+          $ref: '#/components/schemas/EntitySchema'
+        weightConfig:
+          $ref: '#/components/schemas/WeightConfig'
+        analyzers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Analyzer'
+        allowPartialTargetBatches:
+          type: boolean
+        monitors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Monitor'
+        updatedTs:
+          type: integer
+          format: int64
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    MonitorConfigV3Row:
+      type: object
+      properties:
+        id:
+          type: string
+        orgId:
+          type: string
+        datasetId:
+          type: string
+        updatedTs:
+          type: integer
+          format: int64
+        bin:
+          type: integer
+          format: int64
+        jsonConf:
+          type: string
+    MonitorMode:
+      type: object
+      properties:
+        anomalyFilter:
+          $ref: '#/components/schemas/AnomalyFilter'
+    MonitorRunStatus:
+      type: string
+      enum:
+      - REQUESTED
+      - COMPLETED
+      - FAILED
+    MonitorSchedule:
+      type: object
+    NumericMetricsForSegmentKeyRequest:
+      required:
+      - interval
+      - orgId
+      - segmentKey
+      type: object
+      properties:
+        orgId:
+          type: string
+        segmentKey:
+          type: string
+        interval:
+          type: string
+        datasetColumnSelectors:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatasetAndColumn'
+    NumericMetricsForTimeRangeRequest:
+      required:
+      - interval
+      - orgId
+      type: object
+      properties:
+        orgId:
+          type: string
+        interval:
+          type: string
+        segment:
+          type: array
+          items:
+            $ref: '#/components/schemas/SegmentTag'
+        granularity:
+          $ref: '#/components/schemas/DataGranularity'
+        datasetColumnSelectors:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatasetAndColumn'
+    Object:
+      type: object
+    OrgIdCountResponse:
+      required:
+      - orgIdAndCount
+      type: object
+      properties:
+        orgIdAndCount:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrgIdCountResponse.OrgIdCountRow'
+      description: Response for counting the number of rows per org and that percentage
+        of the total.
+    OrgIdCountResponse.OrgIdCountRow:
+      required:
+      - count
+      - orgId
+      - percent
+      type: object
+      properties:
+        orgId:
+          type: string
+        count:
+          type: integer
+          format: int32
+        percent:
+          type: number
+          format: float
+    ParquetIngestResponse:
+      required:
+      - afterInitialLoad
+      - beforeInitialLoad
+      - runId
+      - script
+      - tableName
+      type: object
+      properties:
+        tableName:
+          type: string
+        runId:
+          type: string
+        script:
+          type: string
+        beforeInitialLoad:
+          type: string
+        afterInitialLoad:
+          type: string
+    ParquetIngestionRequest:
+      type: object
+      properties:
+        path:
+          type: string
+        requestedTs:
+          type: integer
+          format: int64
+        runId:
+          type: string
+        async:
+          type: boolean
+        dedupeKey:
+          type: string
+          description: "Optional, provide a UUID for de-duping insert requests"
+          format: uuid
+          nullable: true
+        cutoverTimestamp:
+          type: integer
+          format: int64
+        columns:
+          type: array
+          items:
+            type: string
+        orgId:
+          type: string
+          description: Optionally scope the ingestion to a specific orgId \*
+          nullable: true
+        dryRun:
+          type: boolean
+        s3Fuse:
+          type: boolean
+        targetTable:
+          $ref: '#/components/schemas/TargetTable'
+    Parser_DescriptorProtos.EnumOptions_:
+      type: object
+    Parser_DescriptorProtos.EnumValueOptions_:
+      type: object
+    Parser_DescriptorProtos.FieldOptions_:
+      type: object
+    Parser_DescriptorProtos.FileOptions_:
+      type: object
+    Parser_DescriptorProtos.MessageOptions_:
+      type: object
+    Parser_DescriptorProtos.MethodOptions_:
+      type: object
+    Parser_DescriptorProtos.OneofOptions_:
+      type: object
+    Parser_DescriptorProtos.ServiceOptions_:
+      type: object
+    Parser_DescriptorProtos.UninterpretedOption.NamePart_:
+      type: object
+    Parser_DescriptorProtos.UninterpretedOption_:
+      type: object
+    Parser_GeneratedMessageV3_:
+      type: object
+    Parser_HistogramSummary_:
+      type: object
+    Parser_MessageLite_:
+      type: object
+    Parser_Message_:
+      type: object
+    PostgresBulkIngestionMode:
+      type: string
+      enum:
+      - insert
+      - replace
+    ProfileReadRequest:
+      type: object
+      properties:
+        file:
+          type: string
+    ProfileRollupRequest:
+      required:
+      - columnNames
+      - datasetId
+      - granularity
+      - interval
+      - orgId
+      type: object
+      properties:
+        orgId:
+          type: string
+        datasetId:
+          type: string
+        columnNames:
+          type: array
+          items:
+            type: string
+        interval:
+          type: string
+        segment:
+          type: array
+          items:
+            $ref: '#/components/schemas/SegmentTag'
+        granularity:
+          $ref: '#/components/schemas/DataGranularity'
+        fractions:
+          type: array
+          items:
+            type: number
+            format: double
+        numBins:
+          type: integer
+          format: int32
+        splitPoints:
+          type: array
+          items:
+            type: number
+            format: double
+    ReferenceProfileRequest:
+      required:
+      - datasetId
+      - orgId
+      - referenceProfileId
+      type: object
+      properties:
+        orgId:
+          type: string
+        datasetId:
+          type: string
+        referenceProfileId:
+          type: string
+        columnNames:
+          type: array
+          items:
+            type: string
+        fractions:
+          type: array
+          items:
+            type: number
+            format: double
+        numBins:
+          type: integer
+          format: int32
+        splitPoints:
+          type: array
+          items:
+            type: number
+            format: double
+        segment:
+          type: array
+          items:
+            $ref: '#/components/schemas/SegmentTag'
+    RegressionMetricRow:
+      required:
+      - timestamp
+      type: object
+      properties:
+        timestamp:
+          type: integer
+          format: int64
+        mean_absolute_error:
+          type: number
+          format: double
+        mean_squared_error:
+          type: number
+          format: double
+        root_mean_squared_error:
+          type: number
+          format: double
+        count:
+          type: integer
+          format: int64
+    ReindexFromS3Request:
+      required:
+      - bucket
+      - end
+      - start
+      type: object
+      properties:
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        bucket:
+          type: string
+    SeasonalContainer:
+      type: object
+      properties:
+        seasonal_shouldReplace:
+          type: boolean
+        seasonal_lambdaKeep:
+          type: number
+          format: double
+        seasonal_adjusted_prediction:
+          type: number
+          format: double
+        seasonal_replacement:
+          type: number
+          format: double
+    Segment:
+      required:
+      - tags
+      type: object
+      properties:
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+    SegmentRequestScope:
+      type: string
+      enum:
+      - TIMESERIES
+      - REFERENCE_PROFILE
+      - BOTH
+    SegmentStatistic:
+      type: object
+      properties:
+        numAnomalies:
+          type: integer
+          format: int64
+        segment:
+          type: string
+        analyzerType:
+          type: string
+        columns:
+          type: array
+          items:
+            type: string
+        oldestAnomalyDatasetTimestamp:
+          type: integer
+          format: int64
+        earliestAnomalyDatasetTimestamp:
+          type: integer
+          format: int64
+    SegmentTag:
+      required:
+      - key
+      - value
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+    SegmentWeightConfig:
+      required:
+      - segment
+      - weights
+      type: object
+      properties:
+        weights:
+          type: object
+          additionalProperties:
+            type: number
+            format: double
+        segment:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+    SegmentedGetAlertsOverTimeResponse:
+      required:
+      - results
+      type: object
+      properties:
+        results:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/GetAlertsOverTimeResponse'
+    SegmentsRequest:
+      required:
+      - datasetId
+      - orgId
+      type: object
+      properties:
+        orgId:
+          type: string
+        datasetId:
+          type: string
+        includeHidden:
+          type: boolean
+        scope:
+          $ref: '#/components/schemas/SegmentRequestScope'
+    SirenDigestPayload:
+      type: object
+      properties:
+        id:
+          type: string
+        orgId:
+          type: string
+        datasetId:
+          type: string
+        numAnomalies:
+          type: integer
+          format: int64
+        monitorId:
+          type: string
+        severity:
+          type: integer
+          format: int32
+        mode:
+          type: string
+        segmentStatistics:
+          type: array
+          items:
+            $ref: '#/components/schemas/SegmentStatistic'
+        columnStatistics:
+          type: array
+          items:
+            $ref: '#/components/schemas/ColumnStatistic'
+        oldestAnomalyDatasetTimestamp:
+          type: integer
+          format: int64
+        earliestAnomalyDatasetTimestamp:
+          type: integer
+          format: int64
+        runId:
+          type: string
+        anomalySample:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnalyzerResult'
+        totalWeight:
+          type: number
+          format: double
+    SirenEveryAnomalyPayload:
+      type: object
+      properties:
+        id:
+          type: string
+        analyzerResult:
+          $ref: '#/components/schemas/AnalyzerResult'
+        mode:
+          type: string
+        severity:
+          type: integer
+          format: int32
+        monitorId:
+          type: string
+        orgId:
+          type: string
+        runId:
+          type: string
+    SortOrder:
+      type: string
+      enum:
+      - asc
+      - desc
+    SuccessEnum:
+      type: string
+      enum:
+      - PASS
+      - FAIL
+    Tag:
+      required:
+      - key
+      - value
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+    TargetLevel:
+      type: string
+      enum:
+      - column
+      - dataset
+    TargetMatrix:
+      type: object
+      properties:
+        level:
+          $ref: '#/components/schemas/TargetLevel'
+        segments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Segment'
+        excludeSegments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Segment'
+        profileId:
+          type: string
+    TargetTable:
+      type: string
+      enum:
+      - PROFILE_SEGMENTED
+      - PROFILE_OVERALL
+      - PROFILE_REFERENCE_PROFILE
+      - PROFILE_AUDIT
+      - ANALYZER_RESULTS
+      - ANALYZER_RUNS
+      - MONITOR_CONFIG
+    TemporalUnit:
+      type: object
+      properties:
+        duration:
+          $ref: '#/components/schemas/Duration'
+        durationEstimated:
+          type: boolean
+        dateBased:
+          type: boolean
+        timeBased:
+          type: boolean
+    ThresholdContainer:
+      type: object
+      properties:
+        threshold_absoluteUpper:
+          type: number
+          format: double
+        threshold_absoluteLower:
+          type: number
+          format: double
+        threshold_baselineMetricValue:
+          type: number
+          format: double
+        threshold_metricValue:
+          type: number
+          format: double
+        threshold_calculatedUpper:
+          type: number
+          format: double
+        threshold_calculatedLower:
+          type: number
+          format: double
+        threshold_factor:
+          type: number
+          format: double
+        threshold_minBatchSize:
+          type: integer
+          format: int32
+        threshold_type:
+          $ref: '#/components/schemas/ThresholdType'
+    ThresholdType:
+      type: string
+      enum:
+      - upper
+      - lower
+    TimeBoundaryQuery:
+      required:
+      - datasetIds
+      - orgId
+      type: object
+      properties:
+        orgId:
+          type: string
+        datasetIds:
+          type: array
+          items:
+            type: string
+        segment:
+          type: array
+          items:
+            $ref: '#/components/schemas/SegmentTag'
+    TimeBoundaryResponse:
+      required:
+      - rows
+      type: object
+      properties:
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeBoundaryResponseRow'
+    TimeBoundaryResponseRow:
+      required:
+      - datasetId
+      - end
+      - start
+      type: object
+      properties:
+        start:
+          type: integer
+          format: int64
+        end:
+          type: integer
+          format: int64
+        datasetId:
+          type: string
+    TimeSeriesProfileRequest:
+      required:
+      - datasetIds
+      - granularity
+      - interval
+      - orgId
+      type: object
+      properties:
+        orgId:
+          type: string
+        datasetIds:
+          type: array
+          items:
+            type: string
+        granularity:
+          $ref: '#/components/schemas/DataGranularity'
+        interval:
+          type: string
+        segment:
+          type: array
+          items:
+            $ref: '#/components/schemas/SegmentTag'
+    TimeSeriesProfileResponse:
+      required:
+      - ts
+      type: object
+      properties:
+        ts:
+          type: integer
+          format: int64
+    UnknownFieldSet:
+      type: object
+      properties:
+        defaultInstanceForType:
+          $ref: '#/components/schemas/MessageLite'
+        serializedSize:
+          type: integer
+          format: int32
+        serializedSizeAsMessageSet:
+          type: integer
+          format: int32
+        initialized:
+          type: boolean
+        parserForType:
+          $ref: '#/components/schemas/Parser_MessageLite_'
+    UploadPattern:
+      required:
+      - approximateUploadLagMinutes
+      - approximateUploadWindowMinutes
+      type: object
+      properties:
+        approximateUploadLagMinutes:
+          type: integer
+          description: typical delay between the dataset timestamp and when it gets
+            uploaded
+          format: int64
+        approximateUploadWindowMinutes:
+          type: integer
+          description: Typical delay between when an upload starts and when it ends
+          format: int64
+    WeightConfig:
+      required:
+      - defaultWeights
+      - metadata
+      - segmentWeights
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        defaultWeights:
+          type: number
+          format: double
+        segmentWeights:
+          type: array
+          items:
+            $ref: '#/components/schemas/SegmentWeightConfig'
+    WireFormat.FieldType:
+      type: string
+      enum:
+      - DOUBLE
+      - FLOAT
+      - INT64
+      - UINT64
+      - INT32
+      - FIXED64
+      - FIXED32
+      - BOOL
+      - STRING
+      - GROUP
+      - MESSAGE
+      - BYTES
+      - UINT32
+      - ENUM
+      - SFIXED32
+      - SFIXED64
+      - SINT32
+      - SINT64
+    WireFormat.JavaType:
+      type: string
+      enum:
+      - INT
+      - LONG
+      - FLOAT
+      - DOUBLE
+      - BOOLEAN
+      - STRING
+      - BYTE_STRING
+      - ENUM
+      - MESSAGE
+      
