@@ -3999,7 +3999,6 @@ components:
       - $ref: '#/components/schemas/MessageLite'
       - $ref: '#/components/schemas/MessageLiteOrBuilder'
       - $ref: '#/components/schemas/MessageOrBuilder'
-      - $ref: '#/components/schemas/MessageLiteOrBuilder'
       - type: object
         properties:
           parserForType:
